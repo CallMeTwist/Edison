@@ -1,0 +1,167 @@
+/* ═══════════════════════════════════════════
+   GOOGLE FONTS
+═══════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Caveat:wght@600;700&family=Bebas+Neue&display=swap');
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  cursor: none;
+}
+
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ═══════════════════════════════════════════
+   CURSOR
+═══════════════════════════════════════════ */
+#pf-dot {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+  transition: width 0.18s ease, height 0.18s ease, background 0.3s ease;
+}
+
+#pf-ring {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.38);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.28s ease, height 0.28s ease, border-color 0.4s ease;
+}
+
+/* ═══════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; pointer-events: none; }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.055); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+@keyframes blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes scan {
+  0%   { top: -4px; }
+  100% { top: 100%; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes ripple {
+  0%   { transform: scale(0.5);   opacity: 0.9; }
+  100% { transform: scale(3.5);   opacity: 0; }
+}
+
+@keyframes ringFill {
+  from { stroke-dashoffset: var(--full); }
+  to   { stroke-dashoffset: var(--gap);  }
+}
+
+@keyframes glitch {
+  0%, 89%, 100% { opacity: 1; }
+  90%  { opacity: 0.08; }
+  92%  { opacity: 1; }
+  95%  { opacity: 0.14; }
+  97%  { opacity: 1; }
+}
+
+@keyframes worldIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes drawStroke {
+  from { stroke-dashoffset: 700; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes inkReveal {
+  from { opacity: 0; transform: scale(0.94) translateY(18px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes hoverLift {
+  to { transform: translateY(-6px); }
+}
+
+@keyframes cardEntrance {
+  from { opacity: 0; transform: scale(0.88) translateY(40px) rotateX(12deg); }
+  to   { opacity: 1; transform: scale(1) translateY(0) rotateX(0deg); }
+}
+
+@keyframes nutritionSlide {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE UTILITIES
+═══════════════════════════════════════════ */
+.scroll-area {
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
