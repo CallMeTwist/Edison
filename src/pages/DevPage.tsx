@@ -1,33 +1,33 @@
 import { useState } from 'react'
-import { useWorld }      from '@/context/WorldContext'
+import { useWorld } from '@/context/WorldContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { BackButton }    from '@/components/ui/BackButton'
-import { Terminal }      from '@/features/developer/components/Terminal'
-import { ProjectCard }   from '@/features/developer/components/ProjectCard'
-import { DevGrid3D }     from '@/features/developer/components/DevGrid3D'
+import { BackButton } from '@/components/ui/BackButton'
+import { Terminal } from '@/features/developer/components/Terminal'
+import { ProjectCard } from '@/features/developer/components/ProjectCard'
+import { DevGrid3D } from '@/features/developer/components/DevGrid3D'
 import { PROJECTS, TIMELINE, OPEN_SOURCE, TECH_STACK } from '@/features/developer/data'
 
-const ACC  = '#00FF88'
+const ACC = '#00FF88'
 const TABS = ['Projects', 'Timeline', 'Open Source', 'Tech Stack'] as const
-type Tab   = typeof TABS[number]
+type Tab = typeof TABS[number]
 
 const Pill: React.FC<{ active: boolean; color: string; onClick: () => void; label: string }> =
   ({ active, color, onClick, label }) => (
     <button
       onClick={onClick}
       style={{
-        padding:      '7px 16px',
-        background:    active ? `${color}18` : 'transparent',
-        border:       `1px solid ${active ? color + '55' : 'rgba(0,255,136,.12)'}`,
-        borderRadius:  100,
-        color:         active ? color : 'rgba(0,255,136,.45)',
-        cursor:       'pointer',
-        fontFamily:   "'Space Mono', monospace",
-        fontSize:      10,
-        letterSpacing:  1.5,
+        padding: '7px 16px',
+        background: active ? `${color}18` : 'transparent',
+        border: `1px solid ${active ? color + '55' : 'rgba(0,255,136,.12)'}`,
+        borderRadius: 100,
+        color: active ? color : 'rgba(0,255,136,.45)',
+        cursor: 'pointer',
+        fontFamily: "'Space Mono', monospace",
+        fontSize: 10,
+        letterSpacing: 1.5,
         textTransform: 'uppercase',
-        transition:   'all .28s ease',
-        whiteSpace:   'nowrap',
+        transition: 'all .28s ease',
+        whiteSpace: 'nowrap',
       }}
     >
       {label}
@@ -36,63 +36,63 @@ const Pill: React.FC<{ active: boolean; color: string; onClick: () => void; labe
 
 export const DevPage: React.FC = () => {
   const { navigateTo } = useWorld()
-  const { isMobile }   = useWindowSize()
-  const [tab, setTab]  = useState<Tab>('Projects')
+  const { isMobile } = useWindowSize()
+  const [tab, setTab] = useState<Tab>('Projects')
 
   return (
     <div style={{
-      position:   'fixed',
-      inset:       0,
-      zIndex:      5,
-      animation:  'worldIn .65s ease forwards',
+      position: 'fixed',
+      inset: 0,
+      zIndex: 5,
+      animation: 'worldIn .65s ease forwards',
       background: 'radial-gradient(ellipse at 60% 20%,rgba(0,16,6,.97) 0%,rgba(0,0,0,.99) 100%)',
-      display:    'flex',
+      display: 'flex',
       flexDirection: 'column',
-      overflow:   'hidden',
+      overflow: 'hidden',
     }}>
 
       <DevGrid3D />
 
       {/* CRT scanlines */}
-      <div style={{ position:'absolute', inset:0, backgroundImage:'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.006) 2px,rgba(0,255,136,.006) 4px)', pointerEvents:'none', zIndex:1 }} />
-      <div style={{ position:'absolute', left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,rgba(0,255,136,.25),transparent)', pointerEvents:'none', zIndex:2, animation:'scan 4s linear infinite' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,136,.006) 2px,rgba(0,255,136,.006) 4px)', pointerEvents: 'none', zIndex: 1 }} />
+      <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,rgba(0,255,136,.25),transparent)', pointerEvents: 'none', zIndex: 2, animation: 'scan 4s linear infinite' }} />
 
-      <BackButton onClick={() => navigateTo('hub')} accent={ACC} />
+      <BackButton onClick={() => navigateTo('hub')} accent="#00FF88" />
 
       {/* World label */}
-      <div style={{ position:'absolute', top:24, left:'50%', transform:'translateX(-50%)', textAlign:'center', zIndex:10, pointerEvents:'none' }}>
-        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(0,255,136,.35)', marginBottom:4 }}>WORLD 02</div>
-        <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:'clamp(18px,2.4vw,30px)', color:'#fff', animation:'glitch 8s 4s ease-in-out infinite' }}>Developer</h2>
+      <div style={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)', textAlign: 'center', zIndex: 10, pointerEvents: 'none' }}>
+        <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 6, color: 'rgba(0,255,136,.35)', marginBottom: 4 }}>WORLD 02</div>
+        <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 'clamp(18px,2.4vw,30px)', color: '#fff', animation: 'glitch 8s 4s ease-in-out infinite' }}>Developer</h2>
       </div>
 
       {/* Main layout */}
       <div style={{
-        position:  'relative',
-        zIndex:     5,
-        height:    '100%',
-        display:   'flex',
-        gap:        isMobile ? 0 : 28,
-        padding:    isMobile ? '72px 16px 16px' : '76px 4% 24px',
-        overflow:  'hidden',
+        position: 'relative',
+        zIndex: 5,
+        height: '100%',
+        display: 'flex',
+        gap: isMobile ? 0 : 28,
+        padding: isMobile ? '72px 16px 16px' : '76px 4% 24px',
+        overflow: 'hidden',
         flexDirection: isMobile ? 'column' : 'row',
       }}>
 
         {/* ── Left column ── */}
         <div style={{
-          flex:          isMobile ? '0 0 auto' : '0 0 36%',
-          display:       'flex',
+          flex: isMobile ? '0 0 auto' : '0 0 36%',
+          display: 'flex',
           flexDirection: 'column',
-          gap:            16,
-          overflow:      isMobile ? 'visible' : 'hidden',
-          flexShrink:     0,
+          gap: 16,
+          overflow: isMobile ? 'visible' : 'hidden',
+          flexShrink: 0,
         }}>
-          <div style={{ animation:'fadeUp .8s .2s ease both' }}>
-            <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(0,255,136,.45)', marginBottom:8 }}>DEV.EXE / ONLINE</div>
-            <h1 style={{ fontFamily:"'Syne',sans-serif", fontSize:'clamp(32px,4vw,54px)', fontWeight:800, color:'#fff', lineHeight:.92, marginBottom:8 }}>
+          <div style={{ animation: 'fadeUp .8s .2s ease both' }}>
+            <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 6, color: 'rgba(0,255,136,.45)', marginBottom: 8 }}>DEV.EXE / ONLINE</div>
+            <h1 style={{ fontFamily: "'Syne',sans-serif", fontSize: 'clamp(32px,4vw,54px)', fontWeight: 800, color: '#fff', lineHeight: .92, marginBottom: 8 }}>
               Full Stack<br />
-              <span style={{ color:ACC, animation:'glitch 8s 3s ease-in-out infinite' }}>Developer</span>
+              <span style={{ color: ACC, animation: 'glitch 8s 3s ease-in-out infinite' }}>Developer</span>
             </h1>
-            <p style={{ fontFamily:"'Space Mono',monospace", fontSize:11, color:'rgba(0,255,136,.38)' }}>
+            <p style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(0,255,136,.38)' }}>
               {">"} 6yrs · TypeScript · Python · Cloud Infra
             </p>
           </div>
@@ -101,38 +101,52 @@ export const DevPage: React.FC = () => {
 
           {/* GitHub streak */}
           {!isMobile && (
-            <div style={{ padding:'14px 18px', background:'rgba(0,255,136,.02)', border:'1px solid rgba(0,255,136,.07)', borderRadius:12, animation:'fadeUp .8s .6s ease both' }}>
-              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(0,255,136,.3)', marginBottom:10 }}>CONTRIBUTION_STREAK_2024</div>
-              <div style={{ display:'flex', gap:3, flexWrap:'wrap' }}>
+            <div style={{ padding: '14px 18px', background: 'rgba(0,255,136,.02)', border: '1px solid rgba(0,255,136,.07)', borderRadius: 12, animation: 'fadeUp .8s .6s ease both' }}>
+              <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 4, color: 'rgba(0,255,136,.3)', marginBottom: 10 }}>CONTRIBUTION_STREAK_2024</div>
+              <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                 {Array.from({ length: 52 }, (_, i) => (
-                  <div key={i} style={{ width:9, height:9, borderRadius:2, background:`rgba(0,255,136,${Math.random() > .38 ? Math.random() * .65 + .18 : .06})`, animation:`breathe ${2+Math.random()*2}s ${Math.random()}s ease-in-out infinite` }} />
+                  <div key={i} style={{ width: 9, height: 9, borderRadius: 2, background: `rgba(0,255,136,${Math.random() > .38 ? Math.random() * .65 + .18 : .06})`, animation: `breathe ${2 + Math.random() * 2}s ${Math.random()}s ease-in-out infinite` }} />
                 ))}
               </div>
             </div>
           )}
 
           {/* Contact CTA */}
-          {!isMobile && (
-            <button style={{ padding:'12px 24px', background:'linear-gradient(135deg,rgba(0,255,136,.14),rgba(0,255,136,.04))', border:'1px solid rgba(0,255,136,.35)', borderRadius:100, color:ACC, cursor:'pointer', fontFamily:"'Space Mono',monospace", fontSize:10, letterSpacing:2, textTransform:'uppercase', width:'fit-content', transition:'all .3s', animation:'fadeUp .8s .8s ease both' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,255,136,.2)' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg,rgba(0,255,136,.14),rgba(0,255,136,.04))' }}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', flexShrink: 0 }}>
+            <button
+              onClick={() => navigateTo('contact')}
+              style={{
+                padding: '11px 26px',
+                background: 'linear-gradient(135deg,rgba(0,255,136,.18),rgba(0,255,136,.06))',
+                border: '1px solid rgba(0,255,136,.4)',
+                borderRadius: 100,
+                color: '#00FF88',
+                cursor: 'pointer',
+                fontFamily: "'Space Mono',monospace",
+                fontSize: 10,
+                letterSpacing: 2,
+                textTransform: 'uppercase',
+                transition: 'all .3s ease',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,255,136,.26)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg,rgba(0,255,136,.18),rgba(0,255,136,.06))' }}
             >
               Hire Me →
             </button>
-          )}
+          </div>
         </div>
 
         {/* ── Right column ── */}
-        <div style={{ flex:1, display:'flex', flexDirection:'column', gap:12, overflow:'hidden', animation:'fadeUp .8s .3s ease both', minWidth:0 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden', animation: 'fadeUp .8s .3s ease both', minWidth: 0 }}>
           {/* Tabs */}
-          <div style={{ display:'flex', gap:7, flexWrap:'wrap', flexShrink:0 }}>
+          <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', flexShrink: 0 }}>
             {TABS.map(t => (
               <Pill key={t} label={t} active={tab === t} color={ACC} onClick={() => setTab(t)} />
             ))}
           </div>
 
           {/* Tab content */}
-          <div key={tab} style={{ flex:1, overflowY:'auto', display:'flex', flexDirection:'column', gap:10, animation:'fadeIn .35s ease forwards' }}>
+          <div key={tab} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, animation: 'fadeIn .35s ease forwards' }}>
 
             {/* ── PROJECTS ── */}
             {tab === 'Projects' && PROJECTS.map((p, i) => (
@@ -141,19 +155,19 @@ export const DevPage: React.FC = () => {
 
             {/* ── TIMELINE ── */}
             {tab === 'Timeline' && (
-              <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {TIMELINE.map((entry, i) => (
-                  <div key={entry.year + i} style={{ display:'flex', gap:16, paddingBottom:20, position:'relative', animation:`fadeUp .6s ${i * .1}s ease both` }}>
+                  <div key={entry.year + i} style={{ display: 'flex', gap: 16, paddingBottom: 20, position: 'relative', animation: `fadeUp .6s ${i * .1}s ease both` }}>
                     {/* Timeline spine */}
-                    <div style={{ display:'flex', flexDirection:'column', alignItems:'center', flexShrink:0 }}>
-                      <div style={{ width:10, height:10, borderRadius:'50%', background:ACC, boxShadow:`0 0 10px ${ACC}`, flexShrink:0, marginTop:4 }} />
-                      {i < TIMELINE.length - 1 && <div style={{ width:1, flex:1, background:'rgba(0,255,136,.15)', marginTop:6 }} />}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: ACC, boxShadow: `0 0 10px ${ACC}`, flexShrink: 0, marginTop: 4 }} />
+                      {i < TIMELINE.length - 1 && <div style={{ width: 1, flex: 1, background: 'rgba(0,255,136,.15)', marginTop: 6 }} />}
                     </div>
-                    <div style={{ paddingBottom:4 }}>
-                      <div style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(0,255,136,.5)', marginBottom:3 }}>{entry.year}</div>
-                      <h3 style={{ fontFamily:"'Syne',sans-serif", fontSize:16, fontWeight:700, color:'#fff', marginBottom:2 }}>{entry.role}</h3>
-                      <div style={{ fontSize:11, color:'rgba(0,255,136,.45)', fontFamily:"'Space Mono',monospace", marginBottom:6 }}>{entry.org}</div>
-                      <p style={{ fontSize:12.5, color:'rgba(255,255,255,.4)', lineHeight:1.7 }}>{entry.desc}</p>
+                    <div style={{ paddingBottom: 4 }}>
+                      <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: 'rgba(0,255,136,.5)', marginBottom: 3 }}>{entry.year}</div>
+                      <h3 style={{ fontFamily: "'Syne',sans-serif", fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{entry.role}</h3>
+                      <div style={{ fontSize: 11, color: 'rgba(0,255,136,.45)', fontFamily: "'Space Mono',monospace", marginBottom: 6 }}>{entry.org}</div>
+                      <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,.4)', lineHeight: 1.7 }}>{entry.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -162,37 +176,37 @@ export const DevPage: React.FC = () => {
 
             {/* ── OPEN SOURCE ── */}
             {tab === 'Open Source' && OPEN_SOURCE.map((pkg, i) => (
-              <div key={pkg.name} style={{ background:'rgba(0,255,136,.03)', border:'1px solid rgba(0,255,136,.1)', borderRadius:12, padding:'16px 20px', animation:`fadeUp .6s ${i*.1}s ease both`, cursor:'pointer', transition:'all .3s' }}
-                onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor='rgba(0,255,136,.38)'; el.style.transform='translateY(-3px)' }}
-                onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor='rgba(0,255,136,.1)'; el.style.transform='' }}
+              <div key={pkg.name} style={{ background: 'rgba(0,255,136,.03)', border: '1px solid rgba(0,255,136,.1)', borderRadius: 12, padding: '16px 20px', animation: `fadeUp .6s ${i * .1}s ease both`, cursor: 'pointer', transition: 'all .3s' }}
+                onMouseEnter={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = 'rgba(0,255,136,.38)'; el.style.transform = 'translateY(-3px)' }}
+                onMouseLeave={e => { const el = e.currentTarget as HTMLDivElement; el.style.borderColor = 'rgba(0,255,136,.1)'; el.style.transform = '' }}
               >
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
                   <div>
-                    <span style={{ fontFamily:"'Space Mono',monospace", fontSize:13, color:ACC }}>~/</span>
-                    <span style={{ fontFamily:"'Syne',sans-serif", fontSize:16, fontWeight:700, color:'#fff' }}>{pkg.name}</span>
+                    <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 13, color: ACC }}>~/</span>
+                    <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 16, fontWeight: 700, color: '#fff' }}>{pkg.name}</span>
                   </div>
-                  <div style={{ display:'flex', gap:10, fontSize:10, fontFamily:"'Space Mono',monospace" }}>
-                    <span style={{ color:'rgba(255,215,0,.7)' }}>★ {pkg.stars.toLocaleString()}</span>
-                    <span style={{ padding:'2px 8px', background:'rgba(0,255,136,.07)', border:'1px solid rgba(0,255,136,.15)', borderRadius:4, color:'rgba(0,255,136,.6)' }}>{pkg.lang}</span>
+                  <div style={{ display: 'flex', gap: 10, fontSize: 10, fontFamily: "'Space Mono',monospace" }}>
+                    <span style={{ color: 'rgba(255,215,0,.7)' }}>★ {pkg.stars.toLocaleString()}</span>
+                    <span style={{ padding: '2px 8px', background: 'rgba(0,255,136,.07)', border: '1px solid rgba(0,255,136,.15)', borderRadius: 4, color: 'rgba(0,255,136,.6)' }}>{pkg.lang}</span>
                   </div>
                 </div>
-                <p style={{ fontSize:12.5, color:'rgba(255,255,255,.42)', lineHeight:1.7 }}>{pkg.desc}</p>
+                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,.42)', lineHeight: 1.7 }}>{pkg.desc}</p>
               </div>
             ))}
 
             {/* ── TECH STACK ── */}
             {tab === 'Tech Stack' && (
-              <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {(Object.entries(TECH_STACK) as [string, string[]][]).map(([cat, items], ci) => (
-                  <div key={cat} style={{ animation:`fadeUp .6s ${ci*.08}s ease both` }}>
-                    <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(0,255,136,.35)', marginBottom:9, textTransform:'uppercase' }}>
+                  <div key={cat} style={{ animation: `fadeUp .6s ${ci * .08}s ease both` }}>
+                    <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 4, color: 'rgba(0,255,136,.35)', marginBottom: 9, textTransform: 'uppercase' }}>
                       {cat.replace('_', ' / ')}
                     </div>
-                    <div style={{ display:'flex', flexWrap:'wrap', gap:7 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
                       {items.map(s => (
-                        <span key={s} style={{ padding:'5px 12px', background:'rgba(0,255,136,.05)', border:'1px solid rgba(0,255,136,.12)', borderRadius:7, color:'rgba(0,255,136,.75)', fontSize:11, fontFamily:"'Space Mono',monospace", transition:'all .25s' }}
-                          onMouseEnter={e => { const el = e.currentTarget as HTMLSpanElement; el.style.background='rgba(0,255,136,.14)'; el.style.borderColor='rgba(0,255,136,.4)' }}
-                          onMouseLeave={e => { const el = e.currentTarget as HTMLSpanElement; el.style.background='rgba(0,255,136,.05)'; el.style.borderColor='rgba(0,255,136,.12)' }}
+                        <span key={s} style={{ padding: '5px 12px', background: 'rgba(0,255,136,.05)', border: '1px solid rgba(0,255,136,.12)', borderRadius: 7, color: 'rgba(0,255,136,.75)', fontSize: 11, fontFamily: "'Space Mono',monospace", transition: 'all .25s' }}
+                          onMouseEnter={e => { const el = e.currentTarget as HTMLSpanElement; el.style.background = 'rgba(0,255,136,.14)'; el.style.borderColor = 'rgba(0,255,136,.4)' }}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLSpanElement; el.style.background = 'rgba(0,255,136,.05)'; el.style.borderColor = 'rgba(0,255,136,.12)' }}
                         >{s}</span>
                       ))}
                     </div>
@@ -205,7 +219,7 @@ export const DevPage: React.FC = () => {
       </div>
 
       {/* Corner glow */}
-      <div style={{ position:'absolute', bottom:'5%', right:'5%', width:300, height:300, borderRadius:'50%', background:'radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 70%)', pointerEvents:'none' }} />
+      <div style={{ position: 'absolute', bottom: '5%', right: '5%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle,rgba(0,255,136,.05) 0%,transparent 70%)', pointerEvents: 'none' }} />
     </div>
   )
 }

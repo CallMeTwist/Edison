@@ -11,6 +11,8 @@ import { FitnessPage }             from '@/pages/FitnessPage'
 import { ArtPage }                 from '@/pages/ArtPage'
 import { WORLD_CONFIG }            from '@/config/constants'
 import '@/styles/globals.css'
+import { ContactPage } from '@/pages/ContactPage'
+import { useSwipeNav } from './hooks/useSwiperNav'
 
 // ─────────────────────────────────────────
 // Inner app — consumes WorldContext
@@ -20,6 +22,7 @@ function PortfolioApp() {
 
   const { world, isVeil, veilColor, navigateTo } = useWorld()
   const cfg = WORLD_CONFIG[world]
+    useSwipeNav({ current: world, onNavigate: navigateTo })
 
   // Keep browser title in sync
   useEffect(() => {
@@ -51,6 +54,7 @@ function PortfolioApp() {
         {world === 'dev'     && <DevPage     key="dev"     />}
         {world === 'fitness' && <FitnessPage key="fitness" />}
         {world === 'art'     && <ArtPage     key="art"     />}
+        {world === 'contact' && <ContactPage key="contact" />}
       </div>
 
       {/* World navigation dots (hidden on hub) */}

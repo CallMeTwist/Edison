@@ -65,6 +65,7 @@ export const GalleryCarousel: React.FC = () => {
 
       {/* ── Carousel track ── */}
       <div
+        className="gallery-carousel"
         ref={containerRef}
         onWheel={onWheel}
         onPointerDown={onPointerDown}

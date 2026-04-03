@@ -7,9 +7,15 @@
    RESET
 ═══════════════════════════════════════════ */
 *, *::before, *::after {
+
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body, #root, * {
+  font-family: 'Syne', 'Space Mono', -apple-system, BlinkMacSystemFont,
+               'Segoe UI', Helvetica, Arial, sans-serif;
 }
 
 html, body, #root {

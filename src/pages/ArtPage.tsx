@@ -36,11 +36,7 @@ export const ArtPage: React.FC = () => {
       <div style={{ position:'absolute', bottom:'-10%', left:'-5%', width:320, height:320, borderRadius:'60% 40% 45% 55% / 55% 45% 60% 40%', background:'rgba(160,90,210,.05)', pointerEvents:'none', animation:'breathe 7s 2s ease-in-out infinite', zIndex:1 }} />
       <div style={{ position:'absolute', top:'40%', right:'20%', width:180, height:180, borderRadius:'50%', background:'rgba(255,107,157,.04)', pointerEvents:'none', animation:'breathe 5s 1s ease-in-out infinite', zIndex:1 }} />
 
-      <BackButton
-        onClick={() => navigateTo('hub')}
-        accent='rgba(20,5,12,.6)'
-        style={{ color:'rgba(20,5,12,.5)', background:'rgba(20,5,12,.05)', borderColor:'rgba(20,5,12,.12)' }}
-      />
+      <BackButton onClick={() => navigateTo('hub')} accent="rgba(20,5,12,.9)" />
 
       {/* World label */}
       <div style={{ position:'absolute', top:24, left:'50%', transform:'translateX(-50%)', textAlign:'center', zIndex:10, pointerEvents:'none', whiteSpace:'nowrap' }}>
@@ -104,6 +100,7 @@ export const ArtPage: React.FC = () => {
         {!isMobile && (
           <>
             <button
+              onClick={() => navigateTo('contact')}
               style={{ padding:'12px 26px', background:'#1a0810', border:'none', borderRadius:100, color:'#FBF0E8', cursor:'pointer', fontFamily:"'Caveat',cursive", fontSize:18, transition:'all .3s', width:'fit-content', animation:'fadeUp .8s .85s ease both' }}
               onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background=ACC; el.style.transform='scale(1.04)' }}
               onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background='#1a0810'; el.style.transform='' }}

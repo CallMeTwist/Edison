@@ -45,6 +45,14 @@ export const WORLD_CONFIG: Record<WorldId, WorldConfig> = {
     veilColor:      '#FBF0E8',
     edgeGlow:       'none',
   },
+  contact: {
+  id:             'contact',
+  label:          'Contact',
+  accent:         '#ffffff',
+  particleColor:  [1, 1, 1],
+  veilColor:      '#000000',
+  edgeGlow:       'none',
+},
 }
 
 export const NAV_WORLDS: WorldId[] = ['physio', 'dev', 'fitness', 'art']

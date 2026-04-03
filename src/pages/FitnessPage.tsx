@@ -9,6 +9,7 @@ import { PROGRAMS, CLIENT_STATS, CERTIFICATIONS } from '@/features/fitness/data'
 const ACC  = '#FF4500'
 const TABS = ['Training', 'Nutrition', 'About Me'] as const
 type Tab   = typeof TABS[number]
+// const { navigateTo } = useWorld()
 
 export const FitnessPage: React.FC = () => {
   const { navigateTo } = useWorld()
@@ -31,7 +32,7 @@ export const FitnessPage: React.FC = () => {
       <div style={{ position:'absolute', inset:0, background:'radial-gradient(ellipse at 50% 50%,rgba(255,69,0,.04) 0%,transparent 65%)', animation:'breathe 3.2s ease-in-out infinite', pointerEvents:'none' }} />
       <div style={{ position:'absolute', inset:0, backgroundImage:'repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,69,0,.007) 3px,rgba(255,69,0,.007) 6px)', pointerEvents:'none' }} />
 
-      <BackButton onClick={() => navigateTo('hub')} accent={ACC} />
+      <BackButton onClick={() => navigateTo('hub')} accent="#FF4500" />
 
       {/* World label */}
       <div style={{ position:'absolute', top:24, left:'50%', transform:'translateX(-50%)', textAlign:'center', zIndex:10, pointerEvents:'none', whiteSpace:'nowrap' }}>
@@ -93,6 +94,7 @@ export const FitnessPage: React.FC = () => {
 
           {/* CTA */}
           <button
+            onClick={() => navigateTo('contact')}
             style={{ padding:'14px 34px', background:'linear-gradient(135deg,#FF4500,#FF6B35)', border:'none', borderRadius:100, color:'#fff', cursor:'pointer', fontFamily:"'Bebas Neue',sans-serif", fontSize:19, letterSpacing:3, width:'fit-content', boxShadow:'0 8px 28px rgba(255,69,0,.3)', animation:'fadeUp .8s .65s ease both', transition:'transform .25s,box-shadow .25s', flexShrink:0 }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform='scale(1.05)'; (e.currentTarget as HTMLButtonElement).style.boxShadow='0 14px 40px rgba(255,69,0,.45)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform=''; (e.currentTarget as HTMLButtonElement).style.boxShadow='0 8px 28px rgba(255,69,0,.3)' }}

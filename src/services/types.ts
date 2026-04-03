@@ -2,7 +2,7 @@
 //  CORE APP TYPES
 // ═══════════════════════════════════════════
 
-export type WorldId = 'hub' | 'physio' | 'dev' | 'fitness' | 'art'
+export type WorldId = 'hub' | 'physio' | 'dev' | 'fitness' | 'art' | 'contact'
 
 export interface WorldConfig {
   id: WorldId

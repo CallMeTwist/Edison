@@ -34,7 +34,7 @@ export const PhysioPage: React.FC = () => {
       {/* Scan beam */}
       <div style={{ position:'absolute', left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,rgba(79,195,247,.28),transparent)', pointerEvents:'none', zIndex:2, animation:'scan 5.5s linear infinite' }} />
 
-      <BackButton onClick={() => navigateTo('hub')} accent={ACC} />
+      <BackButton onClick={() => navigateTo('hub')} accent="#4FC3F7" />
 
         
 
@@ -118,6 +118,7 @@ export const PhysioPage: React.FC = () => {
               ))}
             </div>
             <button
+              onClick={() => navigateTo('contact')}
               style={{ padding:'12px 28px', background:'linear-gradient(135deg,rgba(79,195,247,.16),rgba(79,195,247,.04))', border:'1px solid rgba(79,195,247,.38)', borderRadius:100, color:ACC, cursor:'pointer', fontFamily:"'Space Mono',monospace", fontSize:10, letterSpacing:2, textTransform:'uppercase', transition:'all .3s' }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(79,195,247,.2)' }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'linear-gradient(135deg,rgba(79,195,247,.16),rgba(79,195,247,.04))' }}
