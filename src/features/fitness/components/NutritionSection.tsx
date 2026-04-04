@@ -1,4 +1,5 @@
 import { NUTRITION_PRINCIPLES, MACRO_DATA, SUPPLEMENTS } from '../data'
+import { NUTRITION_ICONS, type NutritionIconKey } from './NutritionIcon'
 
 const ACCENT = '#FF4500'
 const DIM    = 'rgba(255,255,255,.38)'
@@ -64,7 +65,14 @@ export const NutritionSection: React.FC = () => (
             el.style.boxShadow   = ''
           }}
         >
-          <div style={{ fontSize: 22, marginBottom: 8 }}>{p.icon}</div>
+          <div style={{ marginBottom: 10 }}>
+            {(() => {
+              const Icon = NUTRITION_ICONS[p.icon as NutritionIconKey]
+              return Icon
+                ? <Icon color={p.color} size={28} />
+                : <span style={{ fontSize: 22 }}>{p.icon}</span>
+            })()}
+          </div>
           <h4 style={{ fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 6 }}>
             {p.title}
           </h4>

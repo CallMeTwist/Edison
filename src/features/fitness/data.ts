@@ -9,37 +9,37 @@ export const PROGRAMS: Program[] = [
 
 export const NUTRITION_PRINCIPLES: NutritionPrinciple[] = [
   {
-    icon:  '⚡',
+    icon:  'caloric',
     title: 'Caloric Precision',
     desc:  'Science-backed calorie targets calculated from your TDEE, activity level and body composition goals — not arbitrary generic numbers.',
     color: '#FF4500',
   },
   {
-    icon:  '🥩',
+    icon:  'protein',
     title: 'Protein Prioritisation',
     desc:  'High-protein frameworks (1.6–2.2g/kg) to preserve lean mass during fat loss phases and drive hypertrophy in muscle-building phases.',
     color: '#FF6B35',
   },
   {
-    icon:  '🔄',
+    icon:  'carbs',
     title: 'Carb Cycling',
     desc:  'Strategic manipulation of carbohydrate intake — high on training days to fuel performance, lower on rest days to enhance fat oxidation.',
     color: '#FF8C42',
   },
   {
-    icon:  '🧠',
+    icon:  'behavioural',
     title: 'Behavioural Coaching',
     desc:  'Nutrition without psychology fails. Weekly mindset coaching, habit stacking and evidence-based behaviour change techniques baked in.',
     color: '#FFAB70',
   },
   {
-    icon:  '📊',
+    icon:  'tracking',
     title: 'Data-Driven Tracking',
     desc:  'Weekly biometric check-ins, progress photos and body composition tracking to make real-time adjustments that keep results coming.',
     color: '#FFC59A',
   },
   {
-    icon:  '🍽️',
+    icon:  'flexible',
     title: 'Flexible Dieting',
     desc:  'If It Fits Your Macros (IIFYM) approach combined with food quality guidance — sustainable eating that fits real life, travel and social events.',
     color: '#FFD4B5',
