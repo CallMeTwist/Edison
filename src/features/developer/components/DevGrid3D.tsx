@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { useMouse } from '@/hooks/useMouse'
+import gsap from '@/lib/gsap'
 
 export const DevGrid3D: React.FC = () => {
   const cvs   = useRef<HTMLCanvasElement>(null)
@@ -24,6 +25,40 @@ export const DevGrid3D: React.FC = () => {
     ;(grid.material as THREE.Material & { opacity: number; transparent: boolean }).opacity = 0.22
     ;(grid.material as THREE.Material & { transparent: boolean }).transparent = true
     scene.add(grid)
+
+    // Vertical grid (behind the scene)
+    const vertGrid = new THREE.GridHelper(50, 25, 0x00ff88, 0x001f0e)
+    vertGrid.rotation.x = Math.PI / 2
+    vertGrid.position.z = -18
+    ;(vertGrid.material as THREE.Material & { opacity: number; transparent: boolean }).opacity = 0.09
+    ;(vertGrid.material as THREE.Material & { transparent: boolean }).transparent = true
+    scene.add(vertGrid)
+
+    // GSAP grid pulse
+    const gsapTweens: gsap.core.Tween[] = []
+
+    const gridMat  = grid.material as THREE.Material & { opacity: number }
+    const vGridMat = vertGrid.material as THREE.Material & { opacity: number }
+
+    gsapTweens.push(
+      gsap.to(gridMat, { opacity: 0.28, duration: 2.2, repeat: -1, yoyo: true, ease: 'sine.inOut' }),
+      gsap.to(vGridMat, { opacity: 0.18, duration: 2.2, delay: 0.8, repeat: -1, yoyo: true, ease: 'sine.inOut' }),
+    )
+
+    // Neon horizontal scan lines
+    for (let i = 0; i < 6; i++) {
+      const points = [
+        new THREE.Vector3(-25, i * 1.2 - 3, -15),
+        new THREE.Vector3( 25, i * 1.2 - 3, -15),
+      ]
+      const lineGeo = new THREE.BufferGeometry().setFromPoints(points)
+      const lineMat = new THREE.LineBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.08 })
+      const line    = new THREE.Line(lineGeo, lineMat)
+      scene.add(line)
+      gsapTweens.push(
+        gsap.to(lineMat, { opacity: 0.22, duration: 1.6 + i * 0.3, repeat: -1, yoyo: true, ease: 'sine.inOut' })
+      )
+    }
 
     /* Floating wireframe cubes (data nodes) */
     const cubeGeo = new THREE.BoxGeometry(0.22, 0.22, 0.22)
@@ -92,6 +127,7 @@ export const DevGrid3D: React.FC = () => {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', onResize)
+      gsapTweens.forEach(t => t.kill())
       renderer.dispose()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,10 +1,12 @@
 // src/features/developer/components/Terminal.tsx
 import { useState, useEffect, useRef } from 'react'
 import { TERM_SCRIPT } from '../data'
+import gsap from '@/lib/gsap'
 
 export const Terminal: React.FC = () => {
   const [typed, setTyped] = useState<typeof TERM_SCRIPT>([])
   const cancelRef = useRef(false)
+  const termRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // Reset on every mount (world re-entry)
@@ -37,8 +39,22 @@ export const Terminal: React.FC = () => {
     }
   }, [])
 
+  // Glow when typing completes
+  useEffect(() => {
+    if (typed.length !== TERM_SCRIPT.length || !termRef.current) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const tween = gsap.fromTo(
+      termRef.current,
+      { boxShadow: '0 0 0 rgba(0,255,136,0)' },
+      { boxShadow: '0 0 32px rgba(0,255,136,0.2)', duration: 1.4, ease: 'power2.out' }
+    )
+    return () => { tween.kill() }
+  }, [typed.length])
+
   return (
     <div
+      ref={termRef}
       style={{
         background:   '#020a04',
         border:       '1px solid rgba(0,255,136,.14)',

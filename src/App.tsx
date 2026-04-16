@@ -1,18 +1,19 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { WorldProvider, useWorld } from '@/context/WorldContext'
 import { ParticleBackground }      from '@/components/ParticleBackground'
 import { NavDots }                 from '@/components/ui/NavDots'
 import { TransitionVeil }          from '@/layouts/TransitionVeil'
 import { useCursor }               from '@/hooks/useCursor'
-import { HubPage }                 from '@/pages/HubPage'
-import { PhysioPage }              from '@/pages/PhysioPage'
-import { DevPage }                 from '@/pages/DevPage'
-import { FitnessPage }             from '@/pages/FitnessPage'
-import { ArtPage }                 from '@/pages/ArtPage'
 import { WORLD_CONFIG }            from '@/config/constants'
 import '@/styles/globals.css'
-import { ContactPage } from '@/pages/ContactPage'
 import { useSwipeNav } from './hooks/useSwiperNav'
+
+const HubPage     = lazy(() => import('@/pages/HubPage').then(m => ({ default: m.HubPage })))
+const PhysioPage  = lazy(() => import('@/pages/PhysioPage').then(m => ({ default: m.PhysioPage })))
+const DevPage     = lazy(() => import('@/pages/DevPage').then(m => ({ default: m.DevPage })))
+const FitnessPage = lazy(() => import('@/pages/FitnessPage').then(m => ({ default: m.FitnessPage })))
+const ArtPage     = lazy(() => import('@/pages/ArtPage').then(m => ({ default: m.ArtPage })))
+const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
 
 // ─────────────────────────────────────────
 // Inner app — consumes WorldContext
@@ -49,12 +50,14 @@ function PortfolioApp() {
 
       {/* World pages — keyed so they fully remount on navigation */}
       <div style={{ position: 'relative', zIndex: 5, width: '100%', height: '100%' }}>
-        {world === 'hub'     && <HubPage     key="hub"     />}
-        {world === 'physio'  && <PhysioPage  key="physio"  />}
-        {world === 'dev'     && <DevPage     key="dev"     />}
-        {world === 'fitness' && <FitnessPage key="fitness" />}
-        {world === 'art'     && <ArtPage     key="art"     />}
-        {world === 'contact' && <ContactPage key="contact" />}
+        <Suspense fallback={null}>
+          {world === 'hub'     && <HubPage     key="hub"     />}
+          {world === 'physio'  && <PhysioPage  key="physio"  />}
+          {world === 'dev'     && <DevPage     key="dev"     />}
+          {world === 'fitness' && <FitnessPage key="fitness" />}
+          {world === 'art'     && <ArtPage     key="art"     />}
+          {world === 'contact' && <ContactPage key="contact" />}
+        </Suspense>
       </div>
 
       {/* World navigation dots (hidden on hub) */}

@@ -157,6 +157,36 @@ body {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+@keyframes drawSVG {
+  from { stroke-dashoffset: var(--len); }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes inkDrop {
+  from { clip-path: circle(0% at 50% 50%); }
+  to   { clip-path: circle(150% at 50% 50%); }
+}
+
+@keyframes rideLoop {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
+}
+
+@keyframes pedalSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes trailFade {
+  from { opacity: .7; transform: scaleX(1); }
+  to   { opacity: 0; transform: scaleX(0); }
+}
+
+@keyframes worldAccentPulse {
+  0%, 100% { opacity: .55; }
+  50%       { opacity: 1; }
+}
+
 /* ═══════════════════════════════════════════
    RESPONSIVE UTILITIES
 ═══════════════════════════════════════════ */

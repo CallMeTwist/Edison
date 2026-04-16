@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useWorld } from '@/context/WorldContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { BackButton } from '@/components/ui/BackButton'
@@ -6,6 +6,8 @@ import { Terminal } from '@/features/developer/components/Terminal'
 import { ProjectCard } from '@/features/developer/components/ProjectCard'
 import { DevGrid3D } from '@/features/developer/components/DevGrid3D'
 import { PROJECTS, TIMELINE, OPEN_SOURCE, TECH_STACK } from '@/features/developer/data'
+import gsap from '@/lib/gsap'
+import MatrixRain from '@/features/developer/components/MatrixRain'
 
 const ACC = '#00FF88'
 const TABS = ['Projects', 'Timeline', 'Open Source', 'Tech Stack'] as const
@@ -38,6 +40,20 @@ export const DevPage: React.FC = () => {
   const { navigateTo } = useWorld()
   const { isMobile } = useWindowSize()
   const [tab, setTab] = useState<Tab>('Projects')
+  const tabContentRef = useRef<HTMLDivElement>(null)
+
+  // Tab content transition
+  useEffect(() => {
+    if (!tabContentRef.current) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const tween = gsap.fromTo(
+      tabContentRef.current,
+      { opacity: 0, x: -18 },
+      { opacity: 1, x: 0, duration: 0.32, ease: 'power2.out' }
+    )
+    return () => { tween.kill() }
+  }, [tab])
 
   return (
     <div style={{
@@ -85,7 +101,9 @@ export const DevPage: React.FC = () => {
           gap: 16,
           overflow: isMobile ? 'visible' : 'hidden',
           flexShrink: 0,
+          position: 'relative',
         }}>
+          <MatrixRain opacity={0.14} />
           <div style={{ animation: 'fadeUp .8s .2s ease both' }}>
             <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 6, color: 'rgba(0,255,136,.45)', marginBottom: 8 }}>DEV.EXE / ONLINE</div>
             <h1 style={{ fontFamily: "'Syne',sans-serif", fontSize: 'clamp(32px,4vw,54px)', fontWeight: 800, color: '#fff', lineHeight: .92, marginBottom: 8 }}>
@@ -146,7 +164,7 @@ export const DevPage: React.FC = () => {
           </div>
 
           {/* Tab content */}
-          <div key={tab} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, animation: 'fadeIn .35s ease forwards' }}>
+          <div ref={tabContentRef} key={tab} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
             {/* ── PROJECTS ── */}
             {tab === 'Projects' && PROJECTS.map((p, i) => (

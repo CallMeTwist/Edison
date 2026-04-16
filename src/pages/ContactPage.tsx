@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useRef, useEffect, type FormEvent } from 'react'
 import { useWorld }      from '@/context/WorldContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { CONTACT_INFO, SERVICE_OPTIONS, type ServiceType } from '@/features/contact/data'
+import gsap from '@/lib/gsap'
 
 type SendMethod = 'whatsapp' | 'email'
 type FormState  = 'idle' | 'sending' | 'sent' | 'error'
@@ -41,6 +42,58 @@ export const ContactPage: React.FC = () => {
     phone:   '',
   })
 
+  const gradientRef    = useRef<HTMLDivElement>(null)
+  const leftPanelRef   = useRef<HTMLDivElement>(null)
+  const rightPanelRef  = useRef<HTMLDivElement>(null)
+  const sliderRef      = useRef<HTMLDivElement>(null)
+  const successRef     = useRef<HTMLDivElement>(null)
+
+  // Page entry animation
+  useEffect(() => {
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+
+    const tweens: gsap.core.Tween[] = []
+
+    // Animated background gradient fade in
+    if (gradientRef.current) {
+      tweens.push(gsap.fromTo(gradientRef.current, { opacity: 0 }, { opacity: 1, duration: 1.2, ease: 'power2.out' }))
+    }
+
+    // Stagger panels in
+    const panels = [leftPanelRef.current, rightPanelRef.current].filter(Boolean) as HTMLDivElement[]
+    if (panels.length) {
+      tweens.push(gsap.fromTo(panels, { opacity: 0, y: 24 }, { opacity: 1, y: 0, stagger: 0.18, duration: 0.65, ease: 'power2.out' }))
+    }
+
+    return () => { tweens.forEach(t => t.kill()) }
+  }, [])
+
+  // Method toggle slider animation
+  useEffect(() => {
+    if (!sliderRef.current) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const tween = gsap.to(sliderRef.current, {
+      x: method === 'whatsapp' ? 0 : '100%',
+      duration: 0.32,
+      ease: 'power2.inOut',
+    })
+    return () => { tween.kill() }
+  }, [method])
+
+  // Success state animation
+  useEffect(() => {
+    if (formState !== 'sent' || !successRef.current) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    gsap.fromTo(
+      successRef.current,
+      { scale: 0.82, opacity: 0, y: 16 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.58, ease: 'back.out(1.7)' }
+    )
+  }, [formState])
+
   const set = (key: keyof FormData) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setData(prev => ({ ...prev, [key]: e.target.value }))
@@ -78,6 +131,19 @@ export const ContactPage: React.FC = () => {
     }
   }
 
+  // GSAP-powered input focus/blur glow
+  const onInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    gsap.to(e.currentTarget, { boxShadow: `0 0 0 1px ${accent}55, 0 0 20px ${accent}20`, duration: 0.28 })
+    e.currentTarget.style.borderColor = `${accent}55`
+    e.currentTarget.style.background  = `rgba(255,255,255,.06)`
+  }
+
+  const onInputBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    gsap.to(e.currentTarget, { boxShadow: 'none', duration: 0.28 })
+    e.currentTarget.style.borderColor = 'rgba(255,255,255,.12)'
+    e.currentTarget.style.background  = 'rgba(255,255,255,.04)'
+  }
+
   // Input shared style
   const inputStyle: React.CSSProperties = {
     width:           '100%',
@@ -108,7 +174,6 @@ export const ContactPage: React.FC = () => {
         position:       'fixed',
         inset:           0,
         zIndex:          10,
-        background:     'radial-gradient(ellipse at 40% 35%, rgba(14,10,30,.97) 0%, rgba(0,0,0,.99) 100%)',
         display:        'flex',
         flexDirection:  isMobile ? 'column' : 'row',
         alignItems:     'stretch',
@@ -116,11 +181,24 @@ export const ContactPage: React.FC = () => {
         overflowY:      'auto',
       }}
     >
-      {/* Grid overlay */}
-      <div style={{ position:'absolute', inset:0, backgroundImage:`linear-gradient(${accent}07 1px,transparent 1px),linear-gradient(90deg,${accent}07 1px,transparent 1px)`, backgroundSize:'55px 55px', pointerEvents:'none' }} />
+      {/* Animated world-accent gradient background */}
+      <div
+        ref={gradientRef}
+        style={{
+          position:   'fixed',
+          inset:       0,
+          background: `radial-gradient(ellipse at 38% 35%, ${accent}08 0%, rgba(14,10,30,.97) 55%, rgba(0,0,0,.99) 100%)`,
+          pointerEvents: 'none',
+          zIndex:      0,
+        }}
+      />
+
+      {/* Grid overlay — accent aware */}
+      <div style={{ position:'absolute', inset:0, backgroundImage:`linear-gradient(${accent}07 1px,transparent 1px),linear-gradient(90deg,${accent}07 1px,transparent 1px)`, backgroundSize:'55px 55px', pointerEvents:'none', zIndex:1 }} />
 
       {/* ── Left info panel ── */}
       <div
+        ref={leftPanelRef}
         style={{
           flex:           isMobile ? '0 0 auto' : '0 0 40%',
           padding:         isMobile ? '48px 24px 24px' : '80px 52px',
@@ -195,7 +273,7 @@ export const ContactPage: React.FC = () => {
               gap:            14,
               padding:       '14px 18px',
               background:   `rgba(37,211,102,.06)`,
-              border:        '1px solid rgba(37,211,102,.18)',
+              border:        `1px solid rgba(37,211,102,.18)`,
               borderRadius:   12,
               textDecoration:'none',
               transition:    'all .28s ease',
@@ -203,7 +281,6 @@ export const ContactPage: React.FC = () => {
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(37,211,102,.13)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(37,211,102,.06)' }}
           >
-            {/* WhatsApp SVG icon */}
             <svg width={22} height={22} viewBox="0 0 24 24" fill="#25D366">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
@@ -243,7 +320,7 @@ export const ContactPage: React.FC = () => {
 
         {/* Response time note */}
         <div style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 16px', background:'rgba(255,255,255,.03)', border:'1px solid rgba(255,255,255,.07)', borderRadius:10 }}>
-          <div style={{ width:8, height:8, borderRadius:'50%', background:'#4CAF50', animation:'breathe 2s ease-in-out infinite', flexShrink:0 }} />
+          <div style={{ width:8, height:8, borderRadius:'50%', background: accent, animation:'breathe 2s ease-in-out infinite', flexShrink:0 }} />
           <span style={{ fontSize:11, color:'rgba(255,255,255,.38)', fontFamily:"'Space Mono',monospace" }}>
             Typically responds within 24 hours
           </span>
@@ -252,6 +329,7 @@ export const ContactPage: React.FC = () => {
 
       {/* ── Right: Form ── */}
       <div
+        ref={rightPanelRef}
         style={{
           flex:    1,
           padding:  isMobile ? '0 24px 48px' : '80px 52px',
@@ -262,34 +340,53 @@ export const ContactPage: React.FC = () => {
           zIndex:   2,
         }}
       >
-        {/* Send method toggle */}
-        <div style={{ display:'flex', gap:8, marginBottom:28 }}>
-          {(['whatsapp', 'email'] as SendMethod[]).map(m => (
-            <button
-              key={m}
-              onClick={() => setMethod(m)}
+        {/* Send method toggle with animated slider */}
+        <div style={{ marginBottom:28 }}>
+          <div style={{ position:'relative', display:'flex', gap:0, background:'rgba(255,255,255,.04)', borderRadius:100, padding:3, width:'fit-content' }}>
+            {/* Animated slider bar */}
+            <div
+              ref={sliderRef}
               style={{
-                padding:      '8px 20px',
-                background:    method === m ? `${accent}18` : 'transparent',
-                border:       `1px solid ${method === m ? `${accent}55` : 'rgba(255,255,255,.1)'}`,
+                position:     'absolute',
+                bottom:        0,
+                left:          0,
+                width:        '50%',
+                height:         2,
+                background:    accent,
                 borderRadius:  100,
-                color:         method === m ? accent : 'rgba(255,255,255,.4)',
-                cursor:       'pointer',
-                fontFamily:   "'Space Mono', monospace",
-                fontSize:      10,
-                letterSpacing:  1.5,
-                textTransform: 'uppercase',
-                transition:   'all .25s ease',
+                boxShadow:    `0 0 8px ${accent}`,
               }}
-            >
-              {m === 'whatsapp' ? '💬 WhatsApp' : '✉️ Email'}
-            </button>
-          ))}
+            />
+            {(['whatsapp', 'email'] as SendMethod[]).map(m => (
+              <button
+                key={m}
+                onClick={() => setMethod(m)}
+                style={{
+                  padding:      '8px 20px',
+                  background:    method === m ? `${accent}18` : 'transparent',
+                  border:       `1px solid ${method === m ? `${accent}55` : 'rgba(255,255,255,.1)'}`,
+                  borderRadius:  100,
+                  color:         method === m ? accent : 'rgba(255,255,255,.4)',
+                  cursor:       'pointer',
+                  fontFamily:   "'Space Mono', monospace",
+                  fontSize:      10,
+                  letterSpacing:  1.5,
+                  textTransform: 'uppercase',
+                  transition:   'all .25s ease',
+                  position:     'relative',
+                  zIndex:         1,
+                }}
+              >
+                {m === 'whatsapp' ? '💬 WhatsApp' : '✉️ Email'}
+              </button>
+            ))}
+          </div>
         </div>
 
         {formState === 'sent' ? (
           /* ── Success state ── */
           <div
+            ref={successRef}
             style={{
               display:        'flex',
               flexDirection:  'column',
@@ -297,7 +394,6 @@ export const ContactPage: React.FC = () => {
               justifyContent: 'center',
               gap:             20,
               padding:        '60px 0',
-              animation:      'fadeUp .6s ease forwards',
               textAlign:      'center',
             }}
           >
@@ -331,8 +427,8 @@ export const ContactPage: React.FC = () => {
                   value={data.name}
                   onChange={set('name')}
                   style={inputStyle}
-                  onFocus={e => { (e.target as HTMLInputElement).style.borderColor = `${accent}55` }}
-                  onBlur={e  => { (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,.12)' }}
+                  onFocus={onInputFocus}
+                  onBlur={onInputBlur}
                 />
               </div>
               <div>
@@ -341,8 +437,8 @@ export const ContactPage: React.FC = () => {
                   value={data.service}
                   onChange={set('service')}
                   style={{ ...inputStyle, cursor:'pointer' }}
-                  onFocus={e => { (e.target as HTMLSelectElement).style.borderColor = `${accent}55` }}
-                  onBlur={e  => { (e.target as HTMLSelectElement).style.borderColor = 'rgba(255,255,255,.12)' }}
+                  onFocus={onInputFocus}
+                  onBlur={onInputBlur}
                 >
                   {SERVICE_OPTIONS.map(s => (
                     <option key={s} value={s} style={{ background:'#0a0a0a' }}>{s}</option>
@@ -351,7 +447,7 @@ export const ContactPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Email + Phone row (optional) */}
+            {/* Email + Phone row */}
             <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap:14 }}>
               <div>
                 <label style={labelStyle}>Email (optional)</label>
@@ -361,8 +457,8 @@ export const ContactPage: React.FC = () => {
                   value={data.email}
                   onChange={set('email')}
                   style={inputStyle}
-                  onFocus={e => { (e.target as HTMLInputElement).style.borderColor = `${accent}55` }}
-                  onBlur={e  => { (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,.12)' }}
+                  onFocus={onInputFocus}
+                  onBlur={onInputBlur}
                 />
               </div>
               <div>
@@ -373,8 +469,8 @@ export const ContactPage: React.FC = () => {
                   value={data.phone}
                   onChange={set('phone')}
                   style={inputStyle}
-                  onFocus={e => { (e.target as HTMLInputElement).style.borderColor = `${accent}55` }}
-                  onBlur={e  => { (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,.12)' }}
+                  onFocus={onInputFocus}
+                  onBlur={onInputBlur}
                 />
               </div>
             </div>
@@ -389,8 +485,8 @@ export const ContactPage: React.FC = () => {
                 value={data.message}
                 onChange={set('message')}
                 style={{ ...inputStyle, resize:'vertical', lineHeight:1.8 }}
-                onFocus={e => { (e.target as HTMLTextAreaElement).style.borderColor = `${accent}55` }}
-                onBlur={e  => { (e.target as HTMLTextAreaElement).style.borderColor = 'rgba(255,255,255,.12)' }}
+                onFocus={onInputFocus}
+                onBlur={onInputBlur}
               />
             </div>
 
@@ -441,7 +537,7 @@ export const ContactPage: React.FC = () => {
       </div>
 
       {/* Ambient glow */}
-      <div style={{ position:'absolute', bottom:'-10%', right:'-5%', width:350, height:350, borderRadius:'50%', background:`radial-gradient(circle,${accent}06 0%,transparent 70%)`, pointerEvents:'none', animation:'breathe 5s ease-in-out infinite' }} />
+      <div style={{ position:'absolute', bottom:'-10%', right:'-5%', width:350, height:350, borderRadius:'50%', background:`radial-gradient(circle,${accent}06 0%,transparent 70%)`, pointerEvents:'none', animation:'breathe 5s ease-in-out infinite', zIndex:1 }} />
     </div>
   )
 }

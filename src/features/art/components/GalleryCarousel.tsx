@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { ARTWORKS } from '../data'
 import { ArtShapeEl } from './ArtShape'
 import { useWindowSize } from '@/hooks/useWindowSize'
+import gsap from '@/lib/gsap'
 
 export const GalleryCarousel: React.FC = () => {
   const [active, setActive]     = useState(0)
@@ -10,6 +11,10 @@ export const GalleryCarousel: React.FC = () => {
   const dragDelta               = useRef(0)
   const { isMobile }            = useWindowSize()
   const containerRef            = useRef<HTMLDivElement>(null)
+  const borderRefs              = useRef<(SVGRectElement | null)[]>([])
+  const titleRef                = useRef<HTMLHeadingElement>(null)
+  const underlineRef            = useRef<SVGPathElement>(null)
+  const infoPanelRef            = useRef<HTMLDivElement>(null)
 
   const total = ARTWORKS.length
 
@@ -52,6 +57,55 @@ export const GalleryCarousel: React.FC = () => {
     else if (dragDelta.current > threshold) prev()
     dragDelta.current = 0
   }
+
+  /* DrawSVG border animation on active card change */
+  useEffect(() => {
+    const borderEl = borderRefs.current[active]
+    if (!borderEl) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const tween = gsap.fromTo(borderEl, { drawSVG: '0%' }, { drawSVG: '100%', duration: 1.1, ease: 'power1.inOut' })
+    return () => { tween.kill() }
+  }, [active])
+
+  /* Title animation on active change */
+  useEffect(() => {
+    if (!titleRef.current) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const tween = gsap.fromTo(
+      titleRef.current,
+      { opacity: 0, y: 12, skewX: 3 },
+      { opacity: 1, y: 0, skewX: 0, duration: 0.42, ease: 'power3.out' }
+    )
+    return () => { tween.kill() }
+  }, [active])
+
+  /* Underline DrawSVG on active change */
+  useEffect(() => {
+    if (!underlineRef.current) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const tween = gsap.fromTo(
+      underlineRef.current,
+      { drawSVG: '0%' },
+      { drawSVG: '100%', duration: 1.3, delay: 0.2, ease: 'power2.out' }
+    )
+    return () => { tween.kill() }
+  }, [active])
+
+  /* Ink spread on info panel when active changes */
+  useEffect(() => {
+    if (!infoPanelRef.current) return
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const tween = gsap.fromTo(
+      infoPanelRef.current,
+      { clipPath: 'circle(0% at 50% 0%)' },
+      { clipPath: 'circle(140% at 50% 0%)', duration: 0.65, ease: 'power2.out' }
+    )
+    return () => { tween.kill() }
+  }, [active])
 
   const artwork = ARTWORKS[active]
 
@@ -103,6 +157,21 @@ export const GalleryCarousel: React.FC = () => {
             <div
               key={art.id}
               onClick={() => { if (offset !== 0) setActive(i) }}
+              onMouseEnter={offset !== 0 ? () => {
+                const borderEl = borderRefs.current[i]
+                if (borderEl) {
+                  gsap.fromTo(borderEl,
+                    { drawSVG: '0%', opacity: 0.45 },
+                    { drawSVG: '40%', duration: 0.5, ease: 'power2.out', opacity: 0.45 }
+                  )
+                }
+              } : undefined}
+              onMouseLeave={offset !== 0 ? () => {
+                const borderEl = borderRefs.current[i]
+                if (borderEl) {
+                  gsap.to(borderEl, { drawSVG: '0%', opacity: 0, duration: 0.3, ease: 'power2.in' })
+                }
+              } : undefined}
               style={{
                 position:  'absolute',
                 width:      CARD_W,
@@ -136,22 +205,18 @@ export const GalleryCarousel: React.FC = () => {
                 index={i}
               />
 
-              {/* Sketch border on active */}
-              {offset === 0 && (
-                <svg
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-                  viewBox="0 0 100 100" preserveAspectRatio="none"
-                >
-                  <rect x={1.5} y={1.5} width={97} height={97} rx={6}
-                    fill="none" stroke={art.colors.h1} strokeWidth={0.8}
-                    strokeDasharray="6 3" opacity={0.55}
-                    style={{
-                      strokeDashoffset: 500,
-                      animation:        'drawStroke 1.6s ease forwards',
-                    }}
-                  />
-                </svg>
-              )}
+              {/* Sketch border — GSAP DrawSVG (active) / hover (non-active) */}
+              <svg
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+                viewBox="0 0 100 100" preserveAspectRatio="none"
+              >
+                <rect
+                  ref={el => { borderRefs.current[i] = el }}
+                  x={1.5} y={1.5} width={97} height={97} rx={6}
+                  fill="none" stroke={art.colors.h1} strokeWidth={0.8}
+                  strokeDasharray="6 3" opacity={offset === 0 ? 0.55 : 0}
+                />
+              </svg>
 
               {/* Available badge */}
               {art.available && offset === 0 && (
@@ -172,7 +237,7 @@ export const GalleryCarousel: React.FC = () => {
                 </div>
               )}
 
-              {/* Bottom gradient label (always visible) */}
+              {/* Bottom gradient label */}
               <div style={{
                 position:   'absolute',
                 inset:       0,
@@ -209,32 +274,41 @@ export const GalleryCarousel: React.FC = () => {
 
       {/* ── Info panel for active artwork ── */}
       <div
-        key={active}
+        ref={infoPanelRef}
         style={{
           flex:      1,
           overflow:  'hidden auto',
           padding:   '0 4px',
-          animation: 'inkReveal .4s ease forwards',
         }}
       >
         <div style={{ maxWidth: 520, margin: '0 auto' }}>
-          {/* Title */}
+          {/* Counter */}
           <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 9, letterSpacing: 6, color: 'rgba(255,107,157,.45)', marginBottom: 8 }}>
             {active + 1} / {total}
           </div>
-          <h2 style={{ fontFamily: "'Caveat', cursive", fontWeight: 700, fontSize: 'clamp(26px,3.5vw,44px)', color: '#1a0810', lineHeight: 1, marginBottom: 4 }}>
+
+          {/* Title — GSAP animated */}
+          <h2
+            ref={titleRef}
+            style={{ fontFamily: "'Caveat', cursive", fontWeight: 700, fontSize: 'clamp(26px,3.5vw,44px)', color: '#1a0810', lineHeight: 1, marginBottom: 4 }}
+          >
             {artwork.title}
           </h2>
+
           <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: 'rgba(20,5,12,.45)', marginBottom: 14 }}>
             {artwork.medium} · {artwork.year}
             {artwork.dimensions && ` · ${artwork.dimensions}`}
           </div>
 
-          {/* SVG underline */}
+          {/* SVG underline — GSAP DrawSVG */}
           <svg viewBox="0 0 160 12" width={160} height={12} style={{ marginBottom: 14, overflow: 'visible' }}>
-            <path d={`M4 8 Q80 3 156 8`} fill="none" stroke={artwork.colors.h1} strokeWidth={2}
+            <path
+              ref={underlineRef}
+              d={`M4 8 Q80 3 156 8`}
+              fill="none"
+              stroke={artwork.colors.h1}
+              strokeWidth={2}
               strokeLinecap="round"
-              style={{ strokeDasharray: 220, strokeDashoffset: 220, animation: 'drawStroke 1.2s .2s ease forwards' }}
             />
           </svg>
 

@@ -17,8 +17,17 @@ export interface WorldConfig {
 //  PHYSIOTHERAPY
 // ═══════════════════════════════════════════
 
-export type BodyRegionId = 'head' | 'shoulder' | 'chest' | 'core' | 'hip' | 'knee' | 'ankle'
-
+export type BodyRegionId =
+  | 'head'
+  | 'shoulder'
+  | 'elbow'
+  | 'hand'
+  | 'chest'
+  | 'core'
+  | 'hip'
+  | 'knee'
+  | 'ankle'
+  
 export interface BodyRegion {
   label: string
   desc: string

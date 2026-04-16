@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx shadcn@latest add https://reactbits.dev/ts-css/aurora)",
+      "Bash(npx shadcn@latest --help)",
+      "Bash(npx shadcn@latest add \"@react-bits/Magnet-TS-CSS\" --yes)",
+      "Bash(npx shadcn@latest add \"@react-bits/ClickSpark-TS-CSS\" --yes)",
+      "Bash(npx shadcn@latest add \"@react-bits/BlurText-TS-CSS\" --yes)",
+      "Bash(npx shadcn@latest add \"@react-bits/CountUp-TS-CSS\" --yes)",
+      "Bash(npx shadcn@latest add --help)",
+      "mcp__reactbits__search_components",
+      "mcp__reactbits__list_components",
+      "mcp__reactbits__get_component",
+      "Bash(npm run *)",
+      "mcp__context7__resolve-library-id",
+      "mcp__gsap-master__understand_and_create_animation",
+      "Bash(grep -v \"^$\")",
+      "Bash(npx playwright *)",
+      "Bash(node *)"
+    ]
+  }
+}

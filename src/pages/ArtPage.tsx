@@ -1,13 +1,34 @@
+import { useEffect, useRef } from 'react'
 import { useWorld }      from '@/context/WorldContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { BackButton }    from '@/components/ui/BackButton'
 import { GalleryCarousel } from '@/features/art/components/GalleryCarousel'
+import gsap from '@/lib/gsap'
 
 const ACC = '#FF6B9D'
 
 export const ArtPage: React.FC = () => {
   const { navigateTo } = useWorld()
   const { isMobile }   = useWindowSize()
+  const blob1Ref = useRef<HTMLDivElement>(null)
+  const blob2Ref = useRef<HTMLDivElement>(null)
+  const blob3Ref = useRef<HTMLDivElement>(null)
+
+  // Blob morphing animation
+  useEffect(() => {
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (noMotion) return
+    const blobs = [blob1Ref.current, blob2Ref.current, blob3Ref.current].filter(Boolean) as HTMLDivElement[]
+    const tween = gsap.to(blobs, {
+      borderRadius: '55% 45% 62% 38% / 40% 58% 42% 60%',
+      duration: 7,
+      stagger: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+    })
+    return () => { tween.kill() }
+  }, [])
 
   return (
     <div style={{
@@ -32,9 +53,9 @@ export const ArtPage: React.FC = () => {
       }} />
 
       {/* Ink blobs */}
-      <div style={{ position:'absolute', top:'-8%', right:'-6%', width:280, height:280, borderRadius:'40% 60% 55% 45% / 45% 55% 40% 60%', background:'rgba(255,107,157,.07)', pointerEvents:'none', animation:'breathe 6s ease-in-out infinite', zIndex:1 }} />
-      <div style={{ position:'absolute', bottom:'-10%', left:'-5%', width:320, height:320, borderRadius:'60% 40% 45% 55% / 55% 45% 60% 40%', background:'rgba(160,90,210,.05)', pointerEvents:'none', animation:'breathe 7s 2s ease-in-out infinite', zIndex:1 }} />
-      <div style={{ position:'absolute', top:'40%', right:'20%', width:180, height:180, borderRadius:'50%', background:'rgba(255,107,157,.04)', pointerEvents:'none', animation:'breathe 5s 1s ease-in-out infinite', zIndex:1 }} />
+      <div ref={blob1Ref} style={{ position:'absolute', top:'-8%', right:'-6%', width:280, height:280, borderRadius:'40% 60% 55% 45% / 45% 55% 40% 60%', background:'rgba(255,107,157,.07)', pointerEvents:'none', zIndex:1 }} />
+      <div ref={blob2Ref} style={{ position:'absolute', bottom:'-10%', left:'-5%', width:320, height:320, borderRadius:'60% 40% 45% 55% / 55% 45% 60% 40%', background:'rgba(160,90,210,.05)', pointerEvents:'none', zIndex:1 }} />
+      <div ref={blob3Ref} style={{ position:'absolute', top:'40%', right:'20%', width:180, height:180, borderRadius:'50%', background:'rgba(255,107,157,.04)', pointerEvents:'none', zIndex:1 }} />
 
       <BackButton onClick={() => navigateTo('hub')} accent="rgba(20,5,12,.9)" />
 

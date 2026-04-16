@@ -11,6 +11,20 @@ export const BODY_DATA: Record<BodyRegionId, BodyRegion> = {
     desc:  'Rotator cuff injuries, frozen shoulder (adhesive capsulitis), impingement syndrome, AC joint injuries, glenohumeral instability and post-arthroplasty rehabilitation.',
     tags:  ['Rotator Cuff', 'Impingement', 'AC Joint', 'Surgical Rehab', 'Stabilisation'],
   },
+
+  // ── NEW ──
+  elbow: {
+    label: 'Elbow & Forearm',
+    desc:  'Tennis elbow (lateral epicondylitis), golfer\'s elbow (medial epicondylitis), olecranon bursitis, elbow ligament sprains, cubital tunnel syndrome and post-fracture rehabilitation of the radial head.',
+    tags:  ['Tennis Elbow', 'Golfer\'s Elbow', 'Epicondylitis', 'Bursitis', 'Cubital Tunnel'],
+  },
+  hand: {
+    label: 'Wrist, Hand & Fingers',
+    desc:  'Carpal tunnel syndrome, De Quervain\'s tenosynovitis, trigger finger, wrist sprains, TFCC injuries, gamekeeper\'s thumb and post-surgical rehabilitation following fractures or tendon repair.',
+    tags:  ['Carpal Tunnel', 'De Quervain\'s', 'Trigger Finger', 'TFCC', 'Wrist Rehab'],
+  },
+  // ── END NEW ──
+
   chest: {
     label: 'Thoracic Spine & Ribs',
     desc:  'Mid-back pain management, thoracic outlet syndrome, rib mobilisation techniques, postural kyphosis correction, breathing pattern disorders and costovertebral joint dysfunction.',
@@ -45,8 +59,8 @@ export const PHYSIO_SERVICES = [
 ]
 
 export const PHYSIO_STATS = [
-  { label: 'Years Experience',  value: '8+' },
-  { label: 'Patients Treated',  value: '500+' },
-  { label: 'Success Rate',      value: '94%' },
+  { label: 'Years Experience', value: '8+' },
+  { label: 'Patients Treated', value: '500+' },
+  { label: 'Success Rate',     value: '94%' },
   { label: 'Avg Recovery Days', value: '28' },
 ]
