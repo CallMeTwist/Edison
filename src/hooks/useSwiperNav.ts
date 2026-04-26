@@ -35,6 +35,9 @@ export function useSwipeNav({
 
     const onDown = (e: PointerEvent) => {
       if (shouldIgnore(e)) return
+      // Edge zone is owned by useEdgeSwipe; let it handle starts within 50px of either edge
+      const w = window.innerWidth
+      if (e.clientX < 50 || e.clientX > w - 50) return
       startX    = e.clientX
       startY    = e.clientY
       startTime = Date.now()

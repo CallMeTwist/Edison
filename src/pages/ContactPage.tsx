@@ -27,10 +27,13 @@ const WORLD_ACCENT: Record<string, string> = {
 }
 
 export const ContactPage: React.FC = () => {
-  const { navigateTo, prevWorld } = useWorld()
-  const { isMobile }              = useWindowSize()
+  const { navigateTo, world, prevWorld } = useWorld()
+  const { isMobile }                     = useWindowSize()
 
-  const accent = WORLD_ACCENT[prevWorld] ?? ACCENT
+  // If the user reloaded directly on /contact, prevWorld equals the current world
+  // and there's no meaningful "back" — fall back to the hub.
+  const backTarget = prevWorld === world ? 'hub' : prevWorld
+  const accent     = WORLD_ACCENT[backTarget] ?? ACCENT
 
   const [formState, setFormState] = useState<FormState>('idle')
   const [method,    setMethod]    = useState<SendMethod>('whatsapp')
@@ -213,7 +216,7 @@ export const ContactPage: React.FC = () => {
       >
         {/* Back button */}
         <button
-          onClick={() => navigateTo(prevWorld)}
+          onClick={() => navigateTo(backTarget)}
           style={{
             position:      'absolute',
             top:            24,

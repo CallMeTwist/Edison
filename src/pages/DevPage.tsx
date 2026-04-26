@@ -99,9 +99,12 @@ export const DevPage: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           gap: 16,
-          overflow: isMobile ? 'visible' : 'hidden',
+          overflowY: 'auto',
+          overflowX: 'hidden',
           flexShrink: 0,
           position: 'relative',
+          paddingRight: isMobile ? 0 : 4,
+          paddingBottom: 12,
         }}>
           <MatrixRain opacity={0.14} />
           <div style={{ animation: 'fadeUp .8s .2s ease both' }}>
@@ -164,7 +167,7 @@ export const DevPage: React.FC = () => {
           </div>
 
           {/* Tab content */}
-          <div ref={tabContentRef} key={tab} style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div ref={tabContentRef} key={tab} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', gap: 12, paddingRight: 4, isolation: 'isolate' }}>
 
             {/* ── PROJECTS ── */}
             {tab === 'Projects' && PROJECTS.map((p, i) => (

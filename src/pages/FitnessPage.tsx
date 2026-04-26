@@ -4,7 +4,7 @@ import { useWindowSize }    from '@/hooks/useWindowSize'
 import { BackButton }       from '@/components/ui/BackButton'
 import { ProgressRing }     from '@/features/fitness/components/ProgressRing'
 import { NutritionSection } from '@/features/fitness/components/NutritionSection'
-import { CyclistScene }     from '@/features/fitness/components/CyclistScene'
+import { RunnerScene }      from '@/features/fitness/components/RunnerScene'
 import CountUp              from '@/components/CountUp'
 import { PROGRAMS, CLIENT_STATS, CERTIFICATIONS } from '@/features/fitness/data'
 import gsap from '@/lib/gsap'
@@ -67,9 +67,9 @@ export const FitnessPage: React.FC = () => {
         <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:'clamp(18px,2.4vw,30px)', color:'#fff', letterSpacing:3 }}>Fitness & Weight Loss</h2>
       </div>
 
-      {/* ── Cyclist Scene — full width, top of page ── */}
+      {/* ── Runner Scene — full width, top of page ── */}
       <div style={{ paddingTop: 64, flexShrink: 0, position: 'relative', zIndex: 5 }}>
-        <CyclistScene onSpeedChange={s => setEnergyLevel(s)} />
+        <RunnerScene onSpeedChange={s => setEnergyLevel(s)} />
       </div>
 
       {/* Main layout */}

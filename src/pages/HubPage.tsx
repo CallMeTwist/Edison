@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { useWorld } from '@/context/WorldContext'
-import { useMouse } from '@/hooks/useMouse'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import type { WorldId } from '@/services/types'
 import { OWNER_NAME } from '@/config/constants'
-import Magnet from '@/components/Magnet'
 import ClickSpark from '@/components/ClickSpark'
 import BlurText from '@/components/BlurText'
 
@@ -19,23 +17,15 @@ interface Portal {
 }
 
 const PORTALS: Portal[] = [
-  { id: 'physio', label: 'Physiotherapist', sub: 'Evidence-based healing & rehabilitation', icon: '⊕', clr: '#4FC3F7', gc: 'rgba(79,195,247,.22)', bg: 'linear-gradient(145deg,rgba(15,42,72,.9),rgba(2,8,20,.96))' },
-  { id: 'dev', label: 'Software Developer', sub: 'Full-stack digital systems & architecture', icon: '◈', clr: '#00FF88', gc: 'rgba(0,255,136,.20)', bg: 'linear-gradient(145deg,rgba(0,28,12,.9),rgba(0,4,1,.96))' },
-  { id: 'fitness', label: 'Fitness & Weight Loss', sub: 'Science-driven body transformation', icon: '◉', clr: '#FF4500', gc: 'rgba(255,69,0,.22)', bg: 'linear-gradient(145deg,rgba(40,8,0,.9),rgba(6,1,0,.96))' },
-  { id: 'art', label: 'Visual Artist', sub: 'Expressive work across media & dimensions', icon: '◎', clr: '#FF6B9D', gc: 'rgba(255,107,157,.20)', bg: 'linear-gradient(145deg,rgba(35,5,22,.9),rgba(6,1,4,.96))' },
-]
-
-const WORLD_PILLS = [
-  { label: 'Physiotherapy', color: '#4FC3F7' },
-  { label: 'Developer',     color: '#00FF88' },
-  { label: 'Fitness',       color: '#FF4500' },
-  { label: 'Artist',        color: '#FF6B9D' },
+  { id: 'physio', label: 'Physiotherapist', sub: 'Evidence-based healing & rehabilitation', icon: '01', clr: '#4FC3F7', gc: 'rgba(79,195,247,.22)', bg: 'linear-gradient(145deg,rgba(15,42,72,.9),rgba(2,8,20,.96))' },
+  { id: 'dev', label: 'Software Developer', sub: 'Full-stack digital systems & architecture', icon: '02', clr: '#00FF88', gc: 'rgba(0,255,136,.20)', bg: 'linear-gradient(145deg,rgba(0,28,12,.9),rgba(0,4,1,.96))' },
+  { id: 'fitness', label: 'Fitness & Weight Loss', sub: 'Science-driven body transformation', icon: '03', clr: '#FF4500', gc: 'rgba(255,69,0,.22)', bg: 'linear-gradient(145deg,rgba(40,8,0,.9),rgba(6,1,0,.96))' },
+  { id: 'art', label: 'Visual Artist', sub: 'Expressive work across media & dimensions', icon: '04', clr: '#FF6B9D', gc: 'rgba(255,107,157,.20)', bg: 'linear-gradient(145deg,rgba(35,5,22,.9),rgba(6,1,4,.96))' },
 ]
 
 export const HubPage: React.FC = () => {
   const { navigateTo } = useWorld()
   const [hov, setHov] = useState<number | null>(null)
-  const mouse = useMouse()
   const { isMobile } = useWindowSize()
 
   return (
@@ -121,8 +111,6 @@ export const HubPage: React.FC = () => {
         textAlign: 'center',
         marginBottom: isMobile ? 28 : 44,
         zIndex: 2,
-        transform: isMobile ? 'none' : `translate(${mouse.current.nx * -6}px,${mouse.current.ny * -4}px)`,
-        transition: 'transform .12s linear',
         animation: 'fadeUp .9s ease forwards',
       }}>
         <div style={{
@@ -132,9 +120,8 @@ export const HubPage: React.FC = () => {
           color: 'rgba(255,255,255,.26)',
           textTransform: 'uppercase',
           marginBottom: 14,
-          animation: 'pulse 3s ease-in-out infinite',
         }}>
-          Creative Portfolio · 2024
+          Creative Portfolio
         </div>
 
         {/* BlurText animated title */}
@@ -181,13 +168,8 @@ export const HubPage: React.FC = () => {
         zIndex: 2,
       }}>
         {PORTALS.map((p, i) => (
-          <Magnet
-            key={p.id}
-            padding={120}
-            magnetStrength={3}
-            style={{ display: 'block' }}
-          >
             <div
+              key={p.id}
               onMouseEnter={() => setHov(i)}
               onMouseLeave={() => setHov(null)}
               onClick={() => navigateTo(p.id)}
@@ -199,9 +181,9 @@ export const HubPage: React.FC = () => {
                 cursor: 'pointer',
                 position: 'relative',
                 overflow: 'hidden',
-                transform: hov === i ? 'scale(1.042) translateY(-7px)' : 'scale(1) translateY(0)',
-                boxShadow: hov === i ? `0 24px 60px ${p.gc}, 0 0 0 1px ${p.clr}22` : '0 4px 20px rgba(0,0,0,.4)',
-                transition: 'all .42s cubic-bezier(.23,1,.32,1)',
+                transform: hov === i ? 'translateY(-4px)' : 'translateY(0)',
+                boxShadow: hov === i ? `0 22px 48px ${p.gc}, 0 0 0 1px ${p.clr}22` : '0 4px 20px rgba(0,0,0,.4)',
+                transition: 'all .55s cubic-bezier(.23,1,.32,1)',
                 animation: `fadeUp .85s ${0.1 + i * 0.12}s ease both`,
               }}
             >
@@ -222,24 +204,18 @@ export const HubPage: React.FC = () => {
                 }} />
               )}
 
-              {/* Pulse indicators */}
+              {/* Subtle status dot */}
               <div style={{
                 position: 'absolute', top: 18, right: 18,
-                width: 8, height: 8, borderRadius: '50%',
+                width: 6, height: 6, borderRadius: '50%',
                 background: p.clr,
-                animation: `breathe ${2.2 + i * 0.3}s ease-in-out infinite`,
-              }} />
-              <div style={{
-                position: 'absolute', top: 12, right: 12,
-                width: 20, height: 20, borderRadius: '50%',
-                border: `1px solid ${p.clr}`,
-                opacity: 0.5,
-                animation: `ripple ${2.2 + i * 0.3}s ease-out infinite`,
+                opacity: 0.55,
+                animation: `breathe ${4 + i * 0.4}s ease-in-out infinite`,
               }} />
 
               <ClickSpark sparkColor={p.clr} sparkCount={10} sparkSize={8}>
                 <div style={{ position: 'relative', zIndex: 1 }}>
-                  <div style={{ fontSize: 26, marginBottom: 12, color: p.clr }}>{p.icon}</div>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, letterSpacing: 4, marginBottom: 14, color: p.clr, opacity: 0.7 }}>{p.icon}</div>
                   <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: isMobile ? 18 : 20, fontWeight: 700, color: '#fff', marginBottom: 8, lineHeight: 1.2 }}>
                     {p.label}
                   </h2>
@@ -253,56 +229,9 @@ export const HubPage: React.FC = () => {
                 </div>
               </ClickSpark>
             </div>
-          </Magnet>
         ))}
       </div>
 
-      {/* ── World indicator strip ── */}
-      <div style={{
-        marginTop: isMobile ? 24 : 40,
-        display: 'flex',
-        gap: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        position: 'relative',
-        zIndex: 2,
-        animation: 'fadeIn 2s 1.4s ease both',
-      }}>
-        {WORLD_PILLS.map((pill) => (
-          <div
-            key={pill.label}
-            style={{
-              padding: '5px 14px',
-              background: `${pill.color}10`,
-              border: `1px solid ${pill.color}30`,
-              borderRadius: 100,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 7,
-              animation: 'worldAccentPulse 3s ease-in-out infinite',
-            }}
-          >
-            <div style={{
-              width: 5,
-              height: 5,
-              borderRadius: '50%',
-              background: pill.color,
-              boxShadow: `0 0 6px ${pill.color}`,
-            }} />
-            <span style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: 8,
-              letterSpacing: 3,
-              color: pill.color,
-              textTransform: 'uppercase',
-              opacity: 0.85,
-            }}>
-              {pill.label}
-            </span>
-          </div>
-        ))}
-      </div>
     </div>
   )
 }

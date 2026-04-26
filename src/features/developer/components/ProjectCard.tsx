@@ -1,7 +1,5 @@
 import { useRef } from 'react'
 import type { Project } from '@/services/types'
-import gsap from '@/lib/gsap'
-import GlareHover from '@/components/GlareHover'
 
 interface Props { project: Project; delay?: number }
 
@@ -10,37 +8,22 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
 
   const handleMouseEnter = () => {
     if (!cardRef.current) return
-    cardRef.current.style.willChange = 'transform'
-    gsap.to(cardRef.current, {
-      rotationY: 7, rotationX: -4, scale: 1.032,
-      duration: 0.4, ease: 'power2.out', transformPerspective: 900,
-    })
-  }
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return
-    const rect = cardRef.current.getBoundingClientRect()
-    const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -8
-    const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 8
-    gsap.to(cardRef.current, { rotationX: rx, rotationY: ry, duration: 0.2, ease: 'none' })
+    cardRef.current.style.transform    = 'translateY(-3px)'
+    cardRef.current.style.borderColor  = 'rgba(0,255,136,.35)'
+    cardRef.current.style.boxShadow    = '0 14px 36px rgba(0,255,136,.08)'
   }
 
   const handleMouseLeave = () => {
     if (!cardRef.current) return
-    gsap.to(cardRef.current, {
-      rotationY: 0, rotationX: 0, scale: 1,
-      duration: 0.5, ease: 'power3.out',
-      onComplete: () => {
-        if (cardRef.current) cardRef.current.style.willChange = ''
-      },
-    })
+    cardRef.current.style.transform    = ''
+    cardRef.current.style.borderColor  = 'rgba(0,255,136,.10)'
+    cardRef.current.style.boxShadow    = ''
   }
 
-  const inner = (
+  return (
     <div
       ref={cardRef}
       onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
         background:   'rgba(0,255,136,.03)',
@@ -50,10 +33,12 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
         cursor:       'pointer',
         position:     'relative',
         overflow:     'hidden',
+        isolation:    'isolate',
         animation:    `fadeUp .8s ${delay}s ease both`,
         flexShrink:    0,
         width:        '100%',
         boxSizing:    'border-box',
+        transition:   'transform .35s ease, border-color .35s ease, box-shadow .35s ease',
       }}
     >
       {/* Scan highlight */}
@@ -118,24 +103,4 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
       </div>
     </div>
   )
-
-  // Wrap featured cards in GlareHover
-  if (project.featured) {
-    return (
-      <GlareHover
-        width="100%"
-        height="auto"
-        background="transparent"
-        borderRadius="12px"
-        borderColor="transparent"
-        glareColor="#00FF88"
-        glareOpacity={0.12}
-        style={{ display: 'block' }}
-      >
-        {inner}
-      </GlareHover>
-    )
-  }
-
-  return inner
 }
