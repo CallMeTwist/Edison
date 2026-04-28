@@ -17,7 +17,8 @@
       "mcp__gsap-master__understand_and_create_animation",
       "Bash(grep -v \"^$\")",
       "Bash(npx playwright *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

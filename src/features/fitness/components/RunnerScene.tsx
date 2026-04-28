@@ -62,14 +62,17 @@ export const RunnerScene: React.FC<Props> = ({ onSpeedChange }) => {
         transformOrigin: '50% 90%',
       })
 
-      const stride        = 0.30  // shorter stride duration → faster cadence
-      const upperArmSwing = 50
-      const upperLegSwing = 45
+      // Slight forward lean — runners don't stand up straight
+      gsap.set(bodyBobRef.current, { rotation: -6, transformOrigin: '0px 0px' })
+
+      const stride        = 0.34
+      const upperArmSwing = 55
+      const upperLegSwing = 48
       // Bend amounts at elbow/knee — these stay positive (joints only flex inward)
-      const elbowBendMin  = 30
-      const elbowBendMax  = 80
-      const kneeBendMin   = 12
-      const kneeBendMax   = 95
+      const elbowBendMin  = 55
+      const elbowBendMax  = 105
+      const kneeBendMin   = 8
+      const kneeBendMax   = 110
 
       // ── Body travel along path ──
       const runTween = gsap.to(runnerRef.current, {
@@ -95,24 +98,25 @@ export const RunnerScene: React.FC<Props> = ({ onSpeedChange }) => {
       })
 
       // ── Upper-limb swings (shoulder / hip) ──
-      gsap.set(rightArmRef.current, { rotation:  upperArmSwing, transformOrigin: '0px 0px' })
+      // Arms are CONTRALATERAL to legs: right arm forward when LEFT leg forward.
+      gsap.set(rightArmRef.current, { rotation: -upperArmSwing, transformOrigin: '0px 0px' })
       const rArm = gsap.to(rightArmRef.current, {
-        rotation: -upperArmSwing, duration: stride, repeat: -1, yoyo: true, ease: 'sine.inOut',
+        rotation:  upperArmSwing, duration: stride, repeat: -1, yoyo: true, ease: 'sine.inOut',
       })
 
-      gsap.set(leftArmRef.current,  { rotation: -upperArmSwing, transformOrigin: '0px 0px' })
+      gsap.set(leftArmRef.current,  { rotation:  upperArmSwing, transformOrigin: '0px 0px' })
       const lArm = gsap.to(leftArmRef.current, {
-        rotation:  upperArmSwing, duration: stride, repeat: -1, yoyo: true, ease: 'sine.inOut',
+        rotation: -upperArmSwing, duration: stride, repeat: -1, yoyo: true, ease: 'sine.inOut',
       })
 
       gsap.set(rightLegRef.current, { rotation:  upperLegSwing, transformOrigin: '0px 0px' })
       const rLeg = gsap.to(rightLegRef.current, {
-        rotation: -upperLegSwing, duration: stride, repeat: -1, yoyo: true, ease: 'sine.inOut',
+        rotation: -upperLegSwing, duration: stride, repeat: -1, yoyo: true, ease: 'power1.inOut',
       })
 
       gsap.set(leftLegRef.current,  { rotation: -upperLegSwing, transformOrigin: '0px 0px' })
       const lLeg = gsap.to(leftLegRef.current, {
-        rotation:  upperLegSwing, duration: stride, repeat: -1, yoyo: true, ease: 'sine.inOut',
+        rotation:  upperLegSwing, duration: stride, repeat: -1, yoyo: true, ease: 'power1.inOut',
       })
 
       // ── Joint bends ──

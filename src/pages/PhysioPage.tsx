@@ -230,7 +230,7 @@ export const PhysioPage: React.FC = () => {
       {/* ── World label (flexShrink: 0 → never compressed) ── */}
       <div style={{ paddingTop: 10, textAlign: 'center', zIndex: 10, flexShrink: 0 }}>
         <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 8, letterSpacing: 5, color: 'rgba(79,195,247,.4)' }}>
-          WORLD 01
+          MOVEMENT
         </div>
         <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 20, color: '#fff', marginTop: 2 }}>
           Physiotherapy
@@ -469,7 +469,7 @@ export const PhysioPage: React.FC = () => {
       <BackButton onClick={() => navigateTo('hub')} accent={ACC} />
 
       <div style={{ position:'absolute', top:24, left:'50%', transform:'translateX(-50%)', textAlign:'center', zIndex:10, pointerEvents:'none' }}>
-        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(79,195,247,.4)', marginBottom:4 }}>WORLD 01</div>
+        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(79,195,247,.4)', marginBottom:4 }}>FUNCTION</div>
         <h2 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:'clamp(18px,2.4vw,30px)', color:'#fff' }}>Physiotherapy</h2>
       </div>
 

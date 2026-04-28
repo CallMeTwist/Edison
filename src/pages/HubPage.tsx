@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useWorld } from '@/context/WorldContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import type { WorldId } from '@/services/types'
@@ -23,44 +23,137 @@ const PORTALS: Portal[] = [
   { id: 'art', label: 'Visual Artist', sub: 'Expressive work across media & dimensions', icon: '04', clr: '#FF6B9D', gc: 'rgba(255,107,157,.20)', bg: 'linear-gradient(145deg,rgba(35,5,22,.9),rgba(6,1,4,.96))' },
 ]
 
+const PROXIMITY_RADIUS = 420
+const DIM_OPACITY = 0.22
+const DIM_BLUR = 2.2
+
 export const HubPage: React.FC = () => {
   const { navigateTo } = useWorld()
   const [hov, setHov] = useState<number | null>(null)
   const { isMobile } = useWindowSize()
+  const portalRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [proximity, setProximity] = useState<number[]>([0, 0, 0, 0])
+  const [scrollHinted, setScrollHinted] = useState(false)
+  const [mobileVisible, setMobileVisible] = useState<boolean[]>([false, false, false, false])
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  /* Desktop: cursor-proximity bloom */
+  useEffect(() => {
+    if (isMobile) return
+    let raf = 0
+    let mx = -9999, my = -9999
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX
+      my = e.clientY
+      if (!scrollHinted) setScrollHinted(true)
+      if (!raf) raf = requestAnimationFrame(tick)
+    }
+    const onLeave = () => {
+      mx = -9999; my = -9999
+      if (!raf) raf = requestAnimationFrame(tick)
+    }
+    const tick = () => {
+      raf = 0
+      const next = PORTALS.map((_, i) => {
+        const el = portalRefs.current[i]
+        if (!el) return 0
+        const r = el.getBoundingClientRect()
+        const cx = r.left + r.width / 2
+        const cy = r.top + r.height / 2
+        const d = Math.hypot(mx - cx, my - cy)
+        return Math.max(0, 1 - d / PROXIMITY_RADIUS)
+      })
+      setProximity(next)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseleave', onLeave)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseleave', onLeave)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [isMobile, scrollHinted])
+
+  /* Mobile: scroll-to-reveal each portal as it enters viewport */
+  useEffect(() => {
+    if (!isMobile) return
+    const observers: IntersectionObserver[] = []
+    PORTALS.forEach((_, i) => {
+      const el = portalRefs.current[i]
+      if (!el) return
+      const ob = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          setMobileVisible(v => { if (v[i]) return v; const n = [...v]; n[i] = true; return n })
+          setScrollHinted(true)
+        }
+      }, { threshold: 0.18, rootMargin: '0px 0px -10% 0px' })
+      ob.observe(el)
+      observers.push(ob)
+    })
+    return () => observers.forEach(o => o.disconnect())
+  }, [isMobile])
+
+  const portalOpacity = (i: number) => {
+    if (isMobile) return mobileVisible[i] ? 1 : 0.22
+    return DIM_OPACITY + (1 - DIM_OPACITY) * proximity[i]
+  }
+  const portalBlur = (i: number) => {
+    if (isMobile) return mobileVisible[i] ? 0 : 1.4
+    return DIM_BLUR * (1 - proximity[i])
+  }
 
   return (
-    <div style={{
+    <div ref={containerRef} style={{
       position: 'fixed',
       inset: 0,
       zIndex: 5,
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: isMobile ? 'flex-start' : 'center',
       padding: isMobile ? '16px' : '32px',
       animation: 'worldIn .7s ease forwards',
       overflowY: isMobile ? 'auto' : 'hidden',
+      WebkitOverflowScrolling: 'touch',
     }}>
 
       {/* ── Background radial ── */}
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 42%,rgba(18,14,40,.94) 0%,rgba(0,0,0,.98) 100%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 42%,rgba(46,32,58,.92) 0%,rgba(14,10,18,.97) 60%,rgba(4,2,6,.99) 100%)', pointerEvents: 'none' }} />
 
-      {/* ── Real photo — dissolves at edges via mask ── */}
+      {/* ── Portrait halo ── */}
+      <div style={{
+        position: isMobile ? 'fixed' : 'absolute',
+        top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: isMobile ? '92vw' : '56vw',
+        maxWidth: 780,
+        aspectRatio: '3 / 4',
+        borderRadius: '50%',
+        background: 'radial-gradient(ellipse 60% 70% at 50% 40%, rgba(120,90,120,.18) 0%, rgba(60,40,70,.08) 45%, transparent 75%)',
+        pointerEvents: 'none',
+        zIndex: 1,
+        animation: 'breathe 7s ease-in-out infinite',
+        filter: 'blur(20px)',
+      }} />
+
+      {/* ── Real photo ── */}
       <div
         style={{
-          position: 'absolute',
-          top: '50%',
+          position: isMobile ? 'fixed' : 'absolute',
+          top: isMobile ? '54%' : '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: isMobile ? '62vw' : '38vw',
-          maxWidth: 540,
+          width: isMobile ? '82vw' : '50vw',
+          maxWidth: 720,
           aspectRatio: '3 / 4',
           zIndex: 1,
           pointerEvents: 'none',
+          opacity: isMobile ? Math.max(0.25, 1 - (mobileVisible.filter(Boolean).length * 0.18)) : 1,
+          transition: 'opacity .5s ease',
         }}
       >
         <img
-          src="/portrait.jpg"
+          src="/edisonn.jpeg"
           alt=""
           aria-hidden="true"
           style={{
@@ -69,27 +162,20 @@ export const HubPage: React.FC = () => {
             objectFit: 'cover',
             objectPosition: 'center top',
             display: 'block',
-            filter: 'grayscale(1) brightness(0.13) contrast(1.35)',
-            maskImage: `radial-gradient(ellipse 78% 82% at 50% 38%, black 32%, transparent 78%)`,
-            WebkitMaskImage: `radial-gradient(ellipse 78% 82% at 50% 38%, black 32%, transparent 78%)`,
+            filter: 'grayscale(1) brightness(0.78) contrast(1.15)',
+            maskImage: `radial-gradient(ellipse 68% 76% at 50% 38%, black 32%, transparent 82%)`,
+            WebkitMaskImage: `radial-gradient(ellipse 68% 76% at 50% 38%, black 32%, transparent 82%)`,
+            opacity: 0.62,
           }}
         />
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(ellipse 60% 55% at 50% 35%, rgba(150,90,120,.14), transparent 72%)',
+          pointerEvents: 'none',
+          mixBlendMode: 'soft-light',
+        }} />
       </div>
-
-      {/* ── Subtle portrait outer glow ── */}
-      <div style={{
-        position: 'absolute',
-        top: '50%', left: '50%',
-        transform: 'translate(-50%, -52%)',
-        width: isMobile ? '55vw' : '32vw',
-        maxWidth: 480,
-        aspectRatio: '1',
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(255,255,255,.04) 0%, transparent 70%)',
-        pointerEvents: 'none',
-        zIndex: 1,
-        animation: 'breathe 7s ease-in-out infinite',
-      }} />
 
       {/* ── Corner world glows ── */}
       {PORTALS.map((p, i) => (
@@ -109,9 +195,11 @@ export const HubPage: React.FC = () => {
       <div style={{
         position: 'relative',
         textAlign: 'center',
-        marginBottom: isMobile ? 28 : 44,
+        marginTop: isMobile ? '7vh' : 0,
+        marginBottom: isMobile ? 0 : 44,
         zIndex: 2,
         animation: 'fadeUp .9s ease forwards',
+        width: '100%',
       }}>
         <div style={{
           fontFamily: "'Space Mono', monospace",
@@ -124,7 +212,6 @@ export const HubPage: React.FC = () => {
           Creative Portfolio
         </div>
 
-        {/* BlurText animated title */}
         <h1 style={{
           fontFamily: "'Syne', sans-serif",
           fontSize: 'clamp(46px,7.5vw,100px)',
@@ -145,17 +232,37 @@ export const HubPage: React.FC = () => {
           />
         </h1>
 
+        {/* Ambient hint — fades out once user interacts */}
         <div style={{
           fontFamily: "'Space Mono', monospace",
-          fontSize: 11,
+          fontSize: 10,
           letterSpacing: 3,
-          color: 'rgba(255,255,255,.3)',
+          color: 'rgba(255,255,255,.42)',
           textTransform: 'uppercase',
-          marginTop: 16,
+          marginTop: 22,
+          opacity: scrollHinted ? 0 : 1,
+          transition: 'opacity .6s ease',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 10,
         }}>
-          Select your dimension ↓
+          {isMobile ? (
+            <>
+              <span style={{ animation: 'float 2s ease-in-out infinite' }}>↓</span>
+              <span>Scroll to explore</span>
+            </>
+          ) : (
+            <>
+              <span>Move cursor to discover</span>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,.5)', animation: 'breathe 2s ease-in-out infinite' }} />
+            </>
+          )}
         </div>
       </div>
+
+      {/* ── Hero spacer (mobile) — pushes portal grid to peek at viewport bottom ── */}
+      {isMobile && <div style={{ flex: '0 0 auto', height: '62vh' }} aria-hidden="true" />}
 
       {/* ── Portal grid ── */}
       <div style={{
@@ -166,37 +273,43 @@ export const HubPage: React.FC = () => {
         maxWidth: 800,
         position: 'relative',
         zIndex: 2,
+        marginBottom: isMobile ? 48 : 0,
       }}>
-        {PORTALS.map((p, i) => (
+        {PORTALS.map((p, i) => {
+          const op = portalOpacity(i)
+          const bl = portalBlur(i)
+          const lit = !isMobile ? proximity[i] > 0.25 : mobileVisible[i]
+          return (
             <div
               key={p.id}
+              ref={el => { portalRefs.current[i] = el }}
               onMouseEnter={() => setHov(i)}
               onMouseLeave={() => setHov(null)}
               onClick={() => navigateTo(p.id)}
               style={{
                 background: p.bg,
-                border: `1px solid ${hov === i ? p.clr + '55' : 'rgba(255,255,255,.06)'}`,
+                border: `1px solid ${hov === i || lit ? p.clr + '55' : 'rgba(255,255,255,.06)'}`,
                 borderRadius: 22,
                 padding: isMobile ? '22px 20px' : '32px 28px',
                 cursor: 'pointer',
                 position: 'relative',
                 overflow: 'hidden',
-                transform: hov === i ? 'translateY(-4px)' : 'translateY(0)',
+                opacity: op,
+                filter: bl > 0.05 ? `blur(${bl}px)` : 'none',
+                transform: hov === i ? 'translateY(-4px)' : (isMobile && !mobileVisible[i] ? 'translateY(20px)' : 'translateY(0)'),
                 boxShadow: hov === i ? `0 22px 48px ${p.gc}, 0 0 0 1px ${p.clr}22` : '0 4px 20px rgba(0,0,0,.4)',
-                transition: 'all .55s cubic-bezier(.23,1,.32,1)',
+                transition: 'opacity .35s ease, filter .35s ease, transform .55s cubic-bezier(.23,1,.32,1), border-color .35s ease, box-shadow .55s ease',
                 animation: `fadeUp .85s ${0.1 + i * 0.12}s ease both`,
               }}
             >
-              {/* Glow floor */}
               <div style={{
                 position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%',
                 background: `radial-gradient(ellipse at 50% 110%,${p.gc},transparent 70%)`,
-                opacity: hov === i ? 1 : 0,
+                opacity: hov === i || (!isMobile && proximity[i] > 0.5) ? 1 : 0,
                 transition: 'opacity .4s ease',
               }} />
 
-              {/* Scan bar */}
-              {hov === i && (
+              {(hov === i || (!isMobile && proximity[i] > 0.6)) && (
                 <div style={{
                   position: 'absolute', left: 0, right: 0, height: 1,
                   background: `linear-gradient(90deg,transparent,${p.clr}66,transparent)`,
@@ -204,7 +317,6 @@ export const HubPage: React.FC = () => {
                 }} />
               )}
 
-              {/* Subtle status dot */}
               <div style={{
                 position: 'absolute', top: 18, right: 18,
                 width: 6, height: 6, borderRadius: '50%',
@@ -223,13 +335,14 @@ export const HubPage: React.FC = () => {
                     {p.sub}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: p.clr, fontSize: 11, fontFamily: "'Space Mono',monospace", opacity: .8 }}>
-                    <span>Enter World</span>
+                    <span>Explore</span>
                     <span style={{ animation: 'float 2s ease-in-out infinite' }}>→</span>
                   </div>
                 </div>
               </ClickSpark>
             </div>
-        ))}
+          )
+        })}
       </div>
 
     </div>

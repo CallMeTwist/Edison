@@ -4,7 +4,7 @@ import type { Project } from '@/services/types'
 interface Props { project: Project; delay?: number }
 
 export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
-  const cardRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLAnchorElement>(null)
 
   const handleMouseEnter = () => {
     if (!cardRef.current) return
@@ -21,8 +21,11 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
   }
 
   return (
-    <div
-      ref={cardRef}
+    <a
+      ref={cardRef as unknown as React.RefObject<HTMLAnchorElement>}
+      href="https://github.com/callmetwist"
+      target="_blank"
+      rel="noopener noreferrer"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
@@ -39,6 +42,8 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
         width:        '100%',
         boxSizing:    'border-box',
         transition:   'transform .35s ease, border-color .35s ease, box-shadow .35s ease',
+        textDecoration: 'none',
+        display:      'block',
       }}
     >
       {/* Scan highlight */}
@@ -101,6 +106,6 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
           </span>
         ))}
       </div>
-    </div>
+    </a>
   )
 }

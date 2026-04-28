@@ -63,7 +63,7 @@ export const FitnessPage: React.FC = () => {
 
       {/* World label */}
       <div style={{ position:'absolute', top:24, left:'50%', transform:'translateX(-50%)', textAlign:'center', zIndex:10, pointerEvents:'none', whiteSpace:'nowrap' }}>
-        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(255,69,0,.45)', marginBottom:4 }}>WORLD 03</div>
+        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(255,69,0,.45)', marginBottom:4 }}> STRENGHT </div>
         <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:'clamp(18px,2.4vw,30px)', color:'#fff', letterSpacing:3 }}>Fitness & Weight Loss</h2>
       </div>
 
@@ -92,6 +92,8 @@ export const FitnessPage: React.FC = () => {
           flexDirection: 'column',
           gap:            isMobile ? 10 : 14,
           flexShrink:     0,
+          minHeight:      0,
+          maxHeight:      isMobile ? 'none' : '100%',
         }}>
           {/* Hero text */}
           <div style={{ animation:'fadeUp .8s .2s ease both' }}>
@@ -137,8 +139,8 @@ export const FitnessPage: React.FC = () => {
 
           {/* Certs desktop */}
           {!isMobile && (
-            <div style={{ borderTop:'1px solid rgba(255,69,0,.08)', paddingTop:12, animation:'fadeUp .8s .7s ease both', overflowY:'auto' }}>
-              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:8 }}>CERTIFICATIONS</div>
+            <div style={{ borderTop:'1px solid rgba(255,69,0,.08)', paddingTop:12, animation:'fadeUp .8s .7s ease both', flex:'1 1 auto', minHeight:0, overflowY:'auto', paddingRight:4 }}>
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:8, position:'sticky', top:0, background:'rgba(2,0,0,.85)', backdropFilter:'blur(4px)', paddingBottom:4 }}>CERTIFICATIONS</div>
               {CERTIFICATIONS.map((c, i) => (
                 <div key={c} style={{ padding:'6px 10px', background:'rgba(255,69,0,.03)', border:'1px solid rgba(255,69,0,.08)', borderRadius:8, color:'rgba(255,255,255,.45)', fontSize:10, display:'flex', gap:8, marginBottom:5, alignItems:'center', animation:`fadeUp .6s ${.7+i*.08}s ease both` }}>
                   <span style={{ color:ACC, fontWeight:700, flexShrink:0 }}>✓</span>{c}
@@ -212,14 +214,35 @@ export const FitnessPage: React.FC = () => {
           {/* ── ABOUT TAB ── */}
           {tab === 'About Me' && (
             <div style={{ display:'flex', flexDirection:'column', gap:16, animation:'fadeUp .5s ease both' }}>
-              <div>
-                <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(255,69,0,.5)', marginBottom:10 }}>MY STORY</div>
-                <p style={{ color:'rgba(255,255,255,.5)', fontSize:13, lineHeight:2, maxWidth:520, marginBottom:14 }}>
-                  What started as a personal journey from being 32kg overweight at age 19 became a lifelong obsession with human physiology and performance. After 5 years competing in natural bodybuilding and earning a sports science degree, I channelled everything into evidence-based coaching.
-                </p>
-                <p style={{ color:'rgba(255,255,255,.38)', fontSize:12.5, lineHeight:2, maxWidth:520 }}>
-                  My physiotherapy background means I approach fitness differently — movement quality first, then intensity. Every programme is designed around longevity, not just aesthetics.
-                </p>
+              <div style={{ display:'flex', flexDirection: isMobile ? 'column' : 'row', gap:20, alignItems:'flex-start' }}>
+                <div style={{
+                  flex: isMobile ? '0 0 auto' : '0 0 200px',
+                  width: isMobile ? '100%' : 200,
+                  maxWidth: isMobile ? 240 : 200,
+                  aspectRatio: '3 / 4',
+                  borderRadius: 14,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  border: '1px solid rgba(255,69,0,.18)',
+                  boxShadow: '0 18px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(255,69,0,.08)',
+                  alignSelf: isMobile ? 'center' : 'flex-start',
+                }}>
+                  <img
+                    src="/assets/WhatsApp%20Image%202026-04-28%20at%205.00.41%20AM.jpeg"
+                    alt="Edison"
+                    style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', filter:'contrast(1.05) saturate(1.05)' }}
+                  />
+                  <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,.55), transparent 50%)', pointerEvents:'none' }} />
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(255,69,0,.5)', marginBottom:10 }}>MY STORY</div>
+                  <p style={{ color:'rgba(255,255,255,.5)', fontSize:13, lineHeight:2, maxWidth:520, marginBottom:14 }}>
+                    What started as a personal journey from being 32kg overweight at age 19 became a lifelong obsession with human physiology and performance. After 5 years competing in natural bodybuilding and earning a sports science degree, I channelled everything into evidence-based coaching.
+                  </p>
+                  <p style={{ color:'rgba(255,255,255,.38)', fontSize:12.5, lineHeight:2, maxWidth:520 }}>
+                    My physiotherapy background means I approach fitness differently — movement quality first, then intensity. Every programme is designed around longevity, not just aesthetics.
+                  </p>
+                </div>
               </div>
 
               <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))', gap:10 }}>

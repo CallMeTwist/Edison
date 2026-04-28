@@ -7,8 +7,10 @@ import gsap from '@/lib/gsap'
 export const GalleryCarousel: React.FC = () => {
   const [active, setActive]     = useState(0)
   const [dragging, setDragging] = useState(false)
+  const [lightbox, setLightbox] = useState(false)
   const dragStart               = useRef(0)
   const dragDelta               = useRef(0)
+  const didDrag                 = useRef(false)
   const { isMobile }            = useWindowSize()
   const containerRef            = useRef<HTMLDivElement>(null)
   const borderRefs              = useRef<(SVGRectElement | null)[]>([])
@@ -24,12 +26,14 @@ export const GalleryCarousel: React.FC = () => {
   /* Keyboard navigation */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && lightbox) { setLightbox(false); return }
+      if (lightbox) return
       if (e.key === 'ArrowLeft')  prev()
       if (e.key === 'ArrowRight') next()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [prev, next])
+  }, [prev, next, lightbox])
 
   /* Wheel navigation */
   const onWheel = (e: React.WheelEvent) => {
@@ -43,11 +47,12 @@ export const GalleryCarousel: React.FC = () => {
     setDragging(true)
     dragStart.current = e.clientX
     dragDelta.current = 0
-    containerRef.current?.setPointerCapture(e.pointerId)
+    didDrag.current = false
   }
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging) return
     dragDelta.current = e.clientX - dragStart.current
+    if (Math.abs(dragDelta.current) > 6) didDrag.current = true
   }
   const onPointerUp = () => {
     if (!dragging) return
@@ -156,7 +161,7 @@ export const GalleryCarousel: React.FC = () => {
           return (
             <div
               key={art.id}
-              onClick={() => { if (offset !== 0) setActive(i) }}
+              onClick={() => { if (didDrag.current) return; if (offset !== 0) setActive(i); else setLightbox(true) }}
               onMouseEnter={offset !== 0 ? () => {
                 const borderEl = borderRefs.current[i]
                 if (borderEl) {
@@ -197,13 +202,32 @@ export const GalleryCarousel: React.FC = () => {
                 background: `linear-gradient(145deg, ${art.colors.h1}18, ${art.colors.h2}0c, rgba(10,5,18,.92))`,
               }}
             >
-              {/* Generative art fill */}
-              <ArtShapeEl
-                shape={art.shape}
-                h1={art.colors.h1}
-                h2={art.colors.h2}
-                index={i}
-              />
+              {/* Artwork image — fills the card */}
+              {art.image ? (
+                <img
+                  src={art.image}
+                  alt={art.title}
+                  draggable={false}
+                  loading="lazy"
+                  style={{
+                    position:    'absolute',
+                    inset:        0,
+                    width:       '100%',
+                    height:      '100%',
+                    objectFit:   'cover',
+                    objectPosition: 'center',
+                    display:     'block',
+                    pointerEvents: 'none',
+                  }}
+                />
+              ) : (
+                <ArtShapeEl
+                  shape={art.shape}
+                  h1={art.colors.h1}
+                  h2={art.colors.h2}
+                  index={i}
+                />
+              )}
 
               {/* Sketch border — GSAP DrawSVG (active) / hover (non-active) */}
               <svg
@@ -336,19 +360,21 @@ export const GalleryCarousel: React.FC = () => {
                 Enquire to Purchase ✦
               </button>
             )}
-            <button style={{
-              padding:      '10px 22px',
-              background:    'transparent',
-              border:       `1px solid rgba(20,5,12,.18)`,
-              borderRadius:  100,
-              color:        'rgba(20,5,12,.55)',
-              cursor:       'pointer',
-              fontFamily:   "'Space Mono', monospace",
-              fontSize:      10,
-              letterSpacing:  1,
-              textTransform: 'uppercase',
-              transition:   'all .3s ease',
-            }}
+            <button
+              onClick={() => setLightbox(true)}
+              style={{
+                padding:      '10px 22px',
+                background:    'transparent',
+                border:       `1px solid rgba(20,5,12,.18)`,
+                borderRadius:  100,
+                color:        'rgba(20,5,12,.55)',
+                cursor:       'pointer',
+                fontFamily:   "'Space Mono', monospace",
+                fontSize:      10,
+                letterSpacing:  1,
+                textTransform: 'uppercase',
+                transition:   'all .3s ease',
+              }}
               onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = artwork.colors.h1; el.style.color = artwork.colors.h1 }}
               onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'rgba(20,5,12,.18)'; el.style.color = 'rgba(20,5,12,.55)' }}
             >
@@ -417,6 +443,158 @@ export const GalleryCarousel: React.FC = () => {
           →
         </button>
       </div>
+
+      {/* ── Lightbox modal ── */}
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            background: 'rgba(8,3,6,.88)',
+            backdropFilter: 'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: isMobile ? 16 : 48,
+            animation: 'fadeIn .35s ease both',
+            cursor: 'zoom-out',
+          }}
+        >
+          {/* paper grain over modal */}
+          <div style={{
+            position: 'absolute', inset: 0, opacity: 0.05, pointerEvents: 'none',
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          }} />
+
+          {/* close button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setLightbox(false) }}
+            aria-label="Close"
+            style={{
+              position: 'absolute',
+              top: 20, right: 20,
+              width: 42, height: 42, borderRadius: '50%',
+              border: `1px solid ${artwork.colors.h1}55`,
+              background: 'rgba(20,5,12,.55)',
+              color: '#FBF0E8',
+              cursor: 'pointer',
+              fontSize: 20, lineHeight: 1,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: "'Space Mono',monospace",
+              transition: 'all .25s ease',
+              zIndex: 2,
+            }}
+            onMouseEnter={e => { const el = e.currentTarget; el.style.background = artwork.colors.h1; el.style.borderColor = artwork.colors.h1 }}
+            onMouseLeave={e => { const el = e.currentTarget; el.style.background = 'rgba(20,5,12,.55)'; el.style.borderColor = `${artwork.colors.h1}55` }}
+          >
+            ×
+          </button>
+
+          {/* prev */}
+          {active > 0 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); prev() }}
+              aria-label="Previous"
+              style={{
+                position: 'absolute',
+                left: isMobile ? 8 : 24,
+                top: '50%', transform: 'translateY(-50%)',
+                width: 44, height: 44, borderRadius: '50%',
+                border: `1px solid rgba(255,255,255,.18)`,
+                background: 'rgba(20,5,12,.55)',
+                color: '#FBF0E8', cursor: 'pointer', fontSize: 18,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                zIndex: 2,
+              }}
+            >←</button>
+          )}
+
+          {/* next */}
+          {active < total - 1 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); next() }}
+              aria-label="Next"
+              style={{
+                position: 'absolute',
+                right: isMobile ? 8 : 24,
+                top: '50%', transform: 'translateY(-50%)',
+                width: 44, height: 44, borderRadius: '50%',
+                border: `1px solid rgba(255,255,255,.18)`,
+                background: 'rgba(20,5,12,.55)',
+                color: '#FBF0E8', cursor: 'pointer', fontSize: 18,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                zIndex: 2,
+              }}
+            >→</button>
+          )}
+
+          {/* content */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              maxWidth: 1100,
+              width: '100%',
+              maxHeight: '100%',
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              gap: isMobile ? 16 : 28,
+              alignItems: 'center',
+              cursor: 'auto',
+              animation: 'fadeUp .45s ease both',
+            }}
+          >
+            <div style={{
+              flex: isMobile ? '0 1 auto' : '1 1 auto',
+              maxHeight: isMobile ? '60vh' : '88vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: 0,
+            }}>
+              <img
+                src={artwork.image}
+                alt={artwork.title}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: isMobile ? '60vh' : '88vh',
+                  objectFit: 'contain',
+                  borderRadius: 8,
+                  boxShadow: `0 30px 80px rgba(0,0,0,.7), 0 0 0 1px ${artwork.colors.h1}33`,
+                  display: 'block',
+                }}
+              />
+            </div>
+
+            <div style={{
+              flex: isMobile ? '0 0 auto' : '0 0 280px',
+              color: '#FBF0E8',
+              fontFamily: "'Syne',sans-serif",
+              maxWidth: isMobile ? '100%' : 280,
+            }}>
+              <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 6, color: `${artwork.colors.h1}cc`, marginBottom: 10 }}>
+                {String(active + 1).padStart(2,'0')} / {String(total).padStart(2,'0')}
+              </div>
+              <h3 style={{
+                fontFamily: "'Caveat',cursive",
+                fontSize: 'clamp(28px,3.6vw,42px)',
+                fontWeight: 700,
+                color: '#fff',
+                lineHeight: 1, marginBottom: 6,
+              }}>{artwork.title}</h3>
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:10, color:'rgba(255,255,255,.5)', marginBottom: 14 }}>
+                {artwork.medium} · {artwork.year}{artwork.dimensions && ` · ${artwork.dimensions}`}
+              </div>
+              <p style={{ color: 'rgba(255,255,255,.7)', fontSize: 13, lineHeight: 1.85 }}>
+                {artwork.description}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

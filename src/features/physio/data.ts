@@ -3,8 +3,8 @@ import type { BodyRegion, BodyRegionId } from '@/services/types'
 export const BODY_DATA: Record<BodyRegionId, BodyRegion> = {
   head: {
     label: 'Head & Cervical Spine',
-    desc:  'Cervical spine mobilisation, tension headache management, TMJ dysfunction, vestibular rehabilitation, whiplash injury recovery and postural correction for screen-related fatigue.',
-    tags:  ['Cervical Mob', 'Dry Needling', 'Vestibular Rehab', 'Taping', 'Postural Correction'],
+    desc:  'Cervical spine mobilisation, tension headache management, TMJ dysfunction, whiplash injury recovery and postural correction for screen-related fatigue.',
+    tags:  ['Stroke', 'Cervical Mob', 'Dry Needling', 'Vestibular Rehab', 'Taping', 'Postural Correction'],
   },
   shoulder: {
     label: 'Shoulder Complex',
@@ -26,9 +26,9 @@ export const BODY_DATA: Record<BodyRegionId, BodyRegion> = {
   // ── END NEW ──
 
   chest: {
-    label: 'Thoracic Spine & Ribs',
+    label: 'Chest &Thoracic Spine',
     desc:  'Mid-back pain management, thoracic outlet syndrome, rib mobilisation techniques, postural kyphosis correction, breathing pattern disorders and costovertebral joint dysfunction.',
-    tags:  ['Thoracic Mob', 'Rib Release', 'Posture', 'Breathing Rehab'],
+    tags:  ['Chest Physiotherapy', 'Thoracic Mob', 'Rib Release', 'Posture', 'Breathing Rehab'],
   },
   core: {
     label: 'Lumbar Spine & Core',
@@ -53,14 +53,14 @@ export const BODY_DATA: Record<BodyRegionId, BodyRegion> = {
 }
 
 export const PHYSIO_SERVICES = [
-  'Manual Therapy', 'Dry Needling', 'Exercise Rehab',
+  'Manual Therapy', 'Soft Tissue Mobilisation', 'Exercise Rehab',
   'Kinesiology Taping', 'Ultrasound', 'Hydrotherapy',
-  'Clinical Pilates', 'Sports Massage',
+  'Clinical Pilates', 'Massage',
 ]
 
 export const PHYSIO_STATS = [
-  { label: 'Years Experience', value: '8+' },
-  { label: 'Patients Treated', value: '500+' },
-  { label: 'Success Rate',     value: '94%' },
-  { label: 'Avg Recovery Days', value: '28' },
+  { label: 'Years Experience', value: '3+' },
+  { label: 'Patients Treated', value: '400+' },
+  { label: 'Rehab Sessions Delivered', value: '1,000+' },
+  { label: 'Goal Achievement Rate', value: '85%+' },
 ]

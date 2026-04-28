@@ -109,6 +109,7 @@ export interface ArtWork {
   colors: { h1: string; h2: string }
   shape: ArtShape
   available?: boolean
+  image?: string
 }
 
 // ═══════════════════════════════════════════

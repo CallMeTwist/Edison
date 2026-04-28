@@ -77,7 +77,7 @@ export const DevPage: React.FC = () => {
 
       {/* World label */}
       <div style={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)', textAlign: 'center', zIndex: 10, pointerEvents: 'none' }}>
-        <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 6, color: 'rgba(0,255,136,.35)', marginBottom: 4 }}>WORLD 02</div>
+        <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 6, color: 'rgba(0,255,136,.35)', marginBottom: 4 }}>SYSTEMS</div>
         <h2 style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 'clamp(18px,2.4vw,30px)', color: '#fff', animation: 'glitch 8s 4s ease-in-out infinite' }}>Developer</h2>
       </div>
 
@@ -89,8 +89,10 @@ export const DevPage: React.FC = () => {
         display: 'flex',
         gap: isMobile ? 0 : 28,
         padding: isMobile ? '72px 16px 16px' : '76px 4% 24px',
-        overflow: 'hidden',
+        overflowY: isMobile ? 'auto' : 'hidden',
+        overflowX: 'hidden',
         flexDirection: isMobile ? 'column' : 'row',
+        WebkitOverflowScrolling: 'touch',
       }}>
 
         {/* ── Left column ── */}
@@ -98,13 +100,14 @@ export const DevPage: React.FC = () => {
           flex: isMobile ? '0 0 auto' : '0 0 36%',
           display: 'flex',
           flexDirection: 'column',
-          gap: 16,
-          overflowY: 'auto',
+          gap: isMobile ? 10 : 16,
+          overflowY: isMobile ? 'visible' : 'auto',
           overflowX: 'hidden',
           flexShrink: 0,
           position: 'relative',
           paddingRight: isMobile ? 0 : 4,
-          paddingBottom: 12,
+          paddingBottom: isMobile ? 8 : 12,
+          maxHeight: isMobile ? 'none' : 'none',
         }}>
           <MatrixRain opacity={0.14} />
           <div style={{ animation: 'fadeUp .8s .2s ease both' }}>
@@ -121,7 +124,7 @@ export const DevPage: React.FC = () => {
           <Terminal />
 
           {/* GitHub streak */}
-          {!isMobile && (
+          {(
             <div style={{ padding: '14px 18px', background: 'rgba(0,255,136,.02)', border: '1px solid rgba(0,255,136,.07)', borderRadius: 12, animation: 'fadeUp .8s .6s ease both' }}>
               <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 4, color: 'rgba(0,255,136,.3)', marginBottom: 10 }}>CONTRIBUTION_STREAK_2024</div>
               <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
@@ -158,16 +161,32 @@ export const DevPage: React.FC = () => {
         </div>
 
         {/* ── Right column ── */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, overflow: 'hidden', animation: 'fadeUp .8s .3s ease both', minWidth: 0 }}>
+        <div style={{ flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', gap: 12, overflow: isMobile ? 'visible' : 'hidden', animation: 'fadeUp .8s .3s ease both', minWidth: 0, minHeight: 0, marginTop: isMobile ? 8 : 0 }}>
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', flexShrink: 0 }}>
+          <div style={{
+            display: 'flex',
+            gap: 7,
+            flexWrap: 'wrap',
+            flexShrink: 0,
+            position: isMobile ? 'sticky' : 'static',
+            top: isMobile ? 0 : 'auto',
+            zIndex: 4,
+            padding: isMobile ? '10px 0' : 0,
+            background: isMobile ? 'linear-gradient(to bottom, rgba(0,8,3,.96) 0%, rgba(0,8,3,.92) 70%, rgba(0,8,3,.7) 100%)' : 'transparent',
+            backdropFilter: isMobile ? 'blur(10px)' : 'none',
+            WebkitBackdropFilter: isMobile ? 'blur(10px)' : 'none',
+            marginLeft: isMobile ? -16 : 0,
+            marginRight: isMobile ? -16 : 0,
+            paddingLeft: isMobile ? 16 : 0,
+            paddingRight: isMobile ? 16 : 0,
+          }}>
             {TABS.map(t => (
               <Pill key={t} label={t} active={tab === t} color={ACC} onClick={() => setTab(t)} />
             ))}
           </div>
 
           {/* Tab content */}
-          <div ref={tabContentRef} key={tab} style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', gap: 12, paddingRight: 4, isolation: 'isolate' }}>
+          <div ref={tabContentRef} key={tab} style={{ flex: isMobile ? '0 0 auto' : 1, overflowY: isMobile ? 'visible' : 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column', gap: 12, paddingRight: isMobile ? 0 : 4, isolation: 'isolate' }}>
 
             {/* ── PROJECTS ── */}
             {tab === 'Projects' && PROJECTS.map((p, i) => (
