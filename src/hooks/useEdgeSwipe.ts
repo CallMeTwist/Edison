@@ -47,7 +47,6 @@ export function useEdgeSwipe({
 
   useEffect(() => {
     if (disabled) return
-    if (!window.matchMedia('(pointer: fine)').matches) return
 
     let side:        EdgeSide | null = null
     let startX       = 0

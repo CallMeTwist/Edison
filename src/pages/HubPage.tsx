@@ -94,25 +94,22 @@ export const HubPage: React.FC = () => {
     return () => { el.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf) }
   }, [isMobile])
 
-  /* Mobile per-card progress with stagger: card i activates over a 0.22 window starting at i*0.16 */
+  /* Mobile per-card progress with stagger — all cards reach full opacity by scroll ≈ 0.55 */
   const cardProgress = (i: number) => {
-    const start = i * 0.16
-    const span = 0.28
+    const start = i * 0.08
+    const span = 0.20
     return Math.min(1, Math.max(0, (scrollProgress - start) / span))
   }
 
   const portalOpacity = (i: number) => {
-    if (isMobile) {
-      const cp = cardProgress(i)
-      return 0.18 + 0.82 * cp
-    }
+    if (isMobile) return cardProgress(i)
     return DIM_OPACITY + (1 - DIM_OPACITY) * proximity[i]
   }
   const portalBlur = (i: number) => {
-    if (isMobile) return 1.6 * (1 - cardProgress(i))
+    if (isMobile) return 2 * (1 - cardProgress(i))
     return DIM_BLUR * (1 - proximity[i])
   }
-  const mobileImageOpacity = Math.max(0.12, 1 - scrollProgress * 0.88)
+  const mobileImageOpacity = Math.max(0.04, 1 - scrollProgress * 1.4)
 
   return (
     <div ref={containerRef} style={{
