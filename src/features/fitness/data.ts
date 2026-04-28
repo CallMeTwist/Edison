@@ -70,8 +70,8 @@ export const CERTIFICATIONS = [
 ]
 
 export const CLIENT_STATS = [
-  { value: '87%',  label: 'Achieved Goal' },
-  { value: '32%',  label: 'Avg Fat Reduction' },
-  { value: '98%',  label: 'Satisfaction Rate' },
-  { value: '340+', label: 'Clients Coached' },
+  { value: '87%', label: 'Clients Reach Their Goals' },
+  { value: '10%', label: 'Typical Fat Loss Range' },
+  { value: '90%+', label: 'Positive Client Feedback' },
+  { value: '120+', label: 'Clients Supported' },
 ]

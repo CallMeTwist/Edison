@@ -5,7 +5,6 @@ import { BackButton }       from '@/components/ui/BackButton'
 import { ProgressRing }     from '@/features/fitness/components/ProgressRing'
 import { NutritionSection } from '@/features/fitness/components/NutritionSection'
 import { RunnerScene }      from '@/features/fitness/components/RunnerScene'
-import CountUp              from '@/components/CountUp'
 import { PROGRAMS, CLIENT_STATS, CERTIFICATIONS } from '@/features/fitness/data'
 import gsap from '@/lib/gsap'
 
@@ -13,12 +12,20 @@ const ACC  = '#FF4500'
 const TABS = ['Training', 'Nutrition', 'About Me'] as const
 type Tab   = typeof TABS[number]
 
-// Parse numeric value and suffix from strings like '87%', '340+'
+// Parse numeric value and suffix from strings like '87%', '340+', '90%+'
 const parseStatValue = (val: string): { num: number; suffix: string } => {
-  const match = val.match(/^(\d+)([%+]?)$/)
+  const match = val.match(/^(\d+)([%+]*)$/)
   if (match) return { num: parseInt(match[1]), suffix: match[2] }
   return { num: 0, suffix: '' }
 }
+
+// Coaching pillars — replaces duplicated stat strip; complements the rings
+const PILLARS: { title: string; sub: string }[] = [
+  { title: 'Movement First', sub: 'Physio-led programming' },
+  { title: 'Custom Macros',  sub: 'TDEE-calibrated nutrition' },
+  { title: 'Weekly Check-ins', sub: 'Data-driven adjustments' },
+  { title: 'Private 1:1 Chat', sub: 'Direct coach access' },
+]
 
 export const FitnessPage: React.FC = () => {
   const { navigateTo } = useWorld()
@@ -40,8 +47,6 @@ export const FitnessPage: React.FC = () => {
     )
     return () => { tween.kill() }
   }, [tab])
-
-  const countDuration = energyLevel > 50 ? 0.8 : 1.6
 
   return (
     <div style={{
@@ -65,7 +70,7 @@ export const FitnessPage: React.FC = () => {
 
       {/* World label */}
       <div style={{ position:'absolute', top:24, left:'50%', transform:'translateX(-50%)', textAlign:'center', zIndex:10, pointerEvents:'none', whiteSpace:'nowrap' }}>
-        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(255,69,0,.45)', marginBottom:4 }}> STRENGHT </div>
+        <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:6, color:'rgba(255,69,0,.45)', marginBottom:4 }}> STRENGTH </div>
         <h2 style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:'clamp(18px,2.4vw,30px)', color:'#fff', letterSpacing:3 }}>Fitness & Weight Loss</h2>
       </div>
 
@@ -96,6 +101,8 @@ export const FitnessPage: React.FC = () => {
           flexShrink:     0,
           minHeight:      0,
           maxHeight:      isMobile ? 'none' : '100%',
+          overflowY:      isMobile ? 'visible' : 'auto',
+          paddingRight:   isMobile ? 0 : 4,
         }}>
           {/* Hero text */}
           <div style={{ animation:'fadeUp .8s .2s ease both' }}>
@@ -152,8 +159,8 @@ export const FitnessPage: React.FC = () => {
 
           {/* Certs desktop */}
           {!isMobile && (
-            <div style={{ borderTop:'1px solid rgba(255,69,0,.08)', paddingTop:12, animation:'fadeUp .8s .7s ease both', flex:'1 1 auto', minHeight:0, overflowY:'auto', paddingRight:4 }}>
-              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:8, position:'sticky', top:0, background:'rgba(2,0,0,.85)', backdropFilter:'blur(4px)', paddingBottom:4 }}>CERTIFICATIONS</div>
+            <div style={{ borderTop:'1px solid rgba(255,69,0,.08)', paddingTop:12, animation:'fadeUp .8s .7s ease both', flexShrink:0, paddingBottom:8 }}>
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:8 }}>CERTIFICATIONS</div>
               {CERTIFICATIONS.map((c, i) => (
                 <div key={c} style={{ padding:'6px 10px', background:'rgba(255,69,0,.03)', border:'1px solid rgba(255,69,0,.08)', borderRadius:8, color:'rgba(255,255,255,.45)', fontSize:10, display:'flex', gap:8, marginBottom:5, alignItems:'center', animation:`fadeUp .6s ${.7+i*.08}s ease both` }}>
                   <span style={{ color:ACC, fontWeight:700, flexShrink:0 }}>✓</span>{c}
@@ -169,30 +176,46 @@ export const FitnessPage: React.FC = () => {
           {/* ── TRAINING TAB ── */}
           {tab === 'Training' && (
             <>
-              {/* Rings */}
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:isMobile?10:18, flexWrap:'wrap', padding:'8px 0' }}>
-                {CLIENT_STATS.slice(0,3).map(({ value, label }, i) => {
-                  const sizes  = [150, 118, 96]
-                  const colors = ['#FF4500','#FF6B35','#FF8C42']
-                  const pcts   = [87, 32, 98]
-                  return <ProgressRing key={label} pct={pcts[i]} color={colors[i]} size={sizes[i]} label={label} />
-                })}
+              {/* Rings — two true % stats, fat-loss shown as centred callout to avoid a tiny 10% arc */}
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:isMobile?14:28, flexWrap:'wrap', padding:'8px 0' }}>
+                {(() => {
+                  const goals    = CLIENT_STATS[0]
+                  const fat      = CLIENT_STATS[1]
+                  const feedback = CLIENT_STATS[2]
+                  const goalsNum    = parseStatValue(goals.value).num
+                  const feedbackNum = parseStatValue(feedback.value).num
+                  return (
+                    <>
+                      <ProgressRing pct={goalsNum} color="#FF4500" size={140} label={goals.label} />
+                      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:6, minWidth:96 }}>
+                        <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:42, color:'#FF6B35', letterSpacing:1, lineHeight:1, textShadow:'0 0 18px rgba(255,107,53,.45)' }}>~{fat.value}</div>
+                        <div style={{ fontSize:10, color:'rgba(255,255,255,.38)', textAlign:'center', fontFamily:"'Space Mono',monospace", maxWidth:120, lineHeight:1.55 }}>{fat.label}</div>
+                      </div>
+                      <ProgressRing pct={feedbackNum} color="#FF8C42" size={140} label={feedback.label} />
+                    </>
+                  )
+                })()}
               </div>
 
-              {/* Stats strip with CountUp */}
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8 }}>
-                {CLIENT_STATS.map(s => {
-                  const { num, suffix } = parseStatValue(s.value)
-                  return (
-                    <div key={s.label} style={{ padding:'10px 8px', background:`rgba(255,69,0,${0.04 + energyLevel * 0.0003})`, border:`1px solid rgba(255,69,0,${0.1 + energyLevel * 0.003})`, borderRadius:10, textAlign:'center' }}>
-                      <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, color:ACC, letterSpacing:1, display:'flex', alignItems:'center', justifyContent:'center', gap:1 }}>
-                        <CountUp to={num} duration={countDuration} style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:20, color:ACC }} />
-                        <span>{suffix}</span>
-                      </div>
-                      <div style={{ fontSize:9, color:'rgba(255,255,255,.35)', fontFamily:"'Space Mono',monospace", marginTop:3, lineHeight:1.5 }}>{s.label}</div>
-                    </div>
-                  )
-                })}
+              {/* Coaching pillars — what makes the programme different */}
+              <div style={{ display:'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap:8 }}>
+                {PILLARS.map((p, i) => (
+                  <div
+                    key={p.title}
+                    style={{
+                      padding:'10px 10px',
+                      background:`rgba(255,69,0,${0.04 + energyLevel * 0.0003})`,
+                      border:`1px solid rgba(255,69,0,${0.1 + energyLevel * 0.003})`,
+                      borderRadius:10,
+                      textAlign:'left',
+                      animation:`fadeUp .6s ${.15 + i*.07}s ease both`,
+                    }}
+                  >
+                    <div style={{ width:5, height:5, borderRadius:'50%', background:ACC, marginBottom:7, boxShadow:`0 0 8px ${ACC}`, animation:`breathe ${2.4 + i*.2}s ease-in-out infinite` }} />
+                    <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:13, color:'#fff', letterSpacing:1.2, lineHeight:1.1, marginBottom:3 }}>{p.title}</div>
+                    <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, color:'rgba(255,255,255,.4)', letterSpacing:.5, lineHeight:1.4 }}>{p.sub}</div>
+                  </div>
+                ))}
               </div>
 
               {/* Program cards */}
@@ -262,7 +285,7 @@ export const FitnessPage: React.FC = () => {
                 {[
                   { label:'Natural Bodybuilder', sub:'5 competition seasons, 3 podiums' },
                   { label:'Sports Science BSc', sub:'First Class Honours, 2017' },
-                  { label:'340+ Clients Coached', sub:'Across 18 countries remotely' },
+                  { label:'120+ Clients Supported', sub:'Online & in-person, multi-country' },
                   { label:'Online & In-Person', sub:'Lagos · London · Remote' },
                 ].map(item => (
                   <div key={item.label} style={{ padding:'12px', background:'rgba(255,69,0,.04)', border:'1px solid rgba(255,69,0,.1)', borderRadius:12 }}>

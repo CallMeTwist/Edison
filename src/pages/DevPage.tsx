@@ -117,7 +117,7 @@ export const DevPage: React.FC = () => {
               <span style={{ color: ACC, animation: 'glitch 8s 3s ease-in-out infinite' }}>Developer</span>
             </h1>
             <p style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: 'rgba(0,255,136,.38)' }}>
-              {">"} 6yrs · TypeScript · Python · Cloud Infra
+              {">"} 3yrs · TypeScript · Laravel · Cloud Infra · Open Source
             </p>
           </div>
 
