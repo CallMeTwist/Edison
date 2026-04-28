@@ -39,7 +39,9 @@ export const ArtPage: React.FC = () => {
       display: 'flex',
       flexDirection: isMobile ? 'column' : 'row',
       animation: 'worldIn .65s ease forwards',
-      overflow: 'hidden',
+      overflowY: isMobile ? 'auto' : 'hidden',
+      overflowX: 'hidden',
+      WebkitOverflowScrolling: 'touch',
     }}>
 
       {/* Paper grain */}
@@ -136,14 +138,15 @@ export const ArtPage: React.FC = () => {
 
       {/* ── Gallery carousel ── */}
       <div style={{
-        flex: 1,
+        flex: isMobile ? '0 0 auto' : 1,
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
-        padding: isMobile ? '16px 0 16px' : '72px 24px 20px 0',
+        overflow: isMobile ? 'visible' : 'hidden',
+        padding: isMobile ? '16px 0 32px' : '72px 24px 20px 0',
         position: 'relative',
         zIndex: 5,
         minWidth: 0,
+        minHeight: isMobile ? '90vh' : 0,
       }}>
         <GalleryCarousel />
       </div>

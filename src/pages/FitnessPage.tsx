@@ -52,7 +52,9 @@ export const FitnessPage: React.FC = () => {
       background: 'radial-gradient(ellipse at 50% 8%,rgba(40,6,0,.98) 0%,rgba(2,0,0,.99) 100%)',
       display:    'flex',
       flexDirection:'column',
-      overflow:   'hidden',
+      overflowY:  isMobile ? 'auto' : 'hidden',
+      overflowX:  'hidden',
+      WebkitOverflowScrolling: 'touch',
     }}>
 
       {/* Energy field animations */}
@@ -76,12 +78,12 @@ export const FitnessPage: React.FC = () => {
       <div style={{
         position:  'relative',
         zIndex:     5,
-        flex:       1,
+        flex:       isMobile ? '0 0 auto' : 1,
         display:   'flex',
         flexDirection: isMobile ? 'column' : 'row',
         gap:        isMobile ? 0 : 24,
-        padding:    isMobile ? '12px 16px 16px' : '12px 4% 20px',
-        overflow:  'hidden',
+        padding:    isMobile ? '12px 16px 32px' : '12px 4% 20px',
+        overflow:  isMobile ? 'visible' : 'hidden',
         minHeight:  0,
       }}>
 
@@ -107,7 +109,18 @@ export const FitnessPage: React.FC = () => {
           </div>
 
           {/* Tab switcher */}
-          <div style={{ display:'flex', gap:8, flexWrap:'wrap', animation:'fadeUp .8s .35s ease both' }}>
+          <div style={{
+            display:'flex', gap:8, flexWrap:'wrap', animation:'fadeUp .8s .35s ease both',
+            position: isMobile ? 'sticky' : 'static',
+            top: isMobile ? 0 : 'auto',
+            zIndex: 6,
+            padding: isMobile ? '10px 16px' : 0,
+            marginLeft: isMobile ? -16 : 0,
+            marginRight: isMobile ? -16 : 0,
+            background: isMobile ? 'linear-gradient(to bottom, rgba(8,2,0,.96) 0%, rgba(8,2,0,.92) 70%, rgba(8,2,0,.7) 100%)' : 'transparent',
+            backdropFilter: isMobile ? 'blur(10px)' : 'none',
+            WebkitBackdropFilter: isMobile ? 'blur(10px)' : 'none',
+          }}>
             {TABS.map(t => (
               <button key={t} onClick={() => setTab(t)}
                 style={{
@@ -151,7 +164,7 @@ export const FitnessPage: React.FC = () => {
         </div>
 
         {/* ── Right scrollable content ── */}
-        <div key={tab} style={{ flex:1, overflowY:'auto', display:'flex', flexDirection:'column', gap:16, animation:'fadeIn .35s ease forwards', paddingRight:4, paddingBottom:8 }}>
+        <div key={tab} style={{ flex: isMobile ? '0 0 auto' : 1, overflowY: isMobile ? 'visible' : 'auto', display:'flex', flexDirection:'column', gap:16, animation:'fadeIn .35s ease forwards', paddingRight: isMobile ? 0 : 4, paddingBottom:8 }}>
 
           {/* ── TRAINING TAB ── */}
           {tab === 'Training' && (

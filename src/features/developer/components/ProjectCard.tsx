@@ -4,7 +4,7 @@ import type { Project } from '@/services/types'
 interface Props { project: Project; delay?: number }
 
 export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
-  const cardRef = useRef<HTMLAnchorElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
 
   const handleMouseEnter = () => {
     if (!cardRef.current) return
@@ -21,11 +21,8 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
   }
 
   return (
-    <a
-      ref={cardRef as unknown as React.RefObject<HTMLAnchorElement>}
-      href="https://github.com/callmetwist"
-      target="_blank"
-      rel="noopener noreferrer"
+    <div
+      ref={cardRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
@@ -33,7 +30,6 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
         border:       '1px solid rgba(0,255,136,.10)',
         borderRadius: 12,
         padding:      '18px 20px',
-        cursor:       'pointer',
         position:     'relative',
         overflow:     'hidden',
         isolation:    'isolate',
@@ -42,7 +38,6 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
         width:        '100%',
         boxSizing:    'border-box',
         transition:   'transform .35s ease, border-color .35s ease, box-shadow .35s ease',
-        textDecoration: 'none',
         display:      'block',
       }}
     >
@@ -76,9 +71,25 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, paddingRight: project.featured ? 72 : 0 }}>
-        <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: 17, fontWeight: 700, color: '#fff' }}>
+        <a
+          href="https://github.com/callmetwist"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: 17,
+            fontWeight: 700,
+            color: '#fff',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            borderBottom: '1px solid transparent',
+            transition: 'color .25s ease, border-color .25s ease',
+          }}
+          onMouseEnter={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.color = '#00FF88'; el.style.borderColor = 'rgba(0,255,136,.5)' }}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLAnchorElement; el.style.color = '#fff'; el.style.borderColor = 'transparent' }}
+        >
           {project.name}
-        </h3>
+        </a>
         <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: 'rgba(0,255,136,.38)', flexShrink: 0, marginLeft: 12 }}>
           {project.year}
         </span>
@@ -106,6 +117,6 @@ export const ProjectCard: React.FC<Props> = ({ project, delay = 0 }) => {
           </span>
         ))}
       </div>
-    </a>
+    </div>
   )
 }
