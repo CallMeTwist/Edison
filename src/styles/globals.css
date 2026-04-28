@@ -27,8 +27,14 @@ html, body, #root {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  cursor: none;
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  #pf-dot, #pf-ring { display: none !important; }
 }
 
 ::-webkit-scrollbar { display: none; }

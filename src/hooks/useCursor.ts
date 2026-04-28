@@ -2,6 +2,14 @@ import { useEffect } from 'react'
 
 export function useCursor() {
   useEffect(() => {
+    // Skip entirely on touch / coarse-pointer devices (mobile, tablet)
+    if (typeof window === 'undefined') return
+    const isTouch =
+      window.matchMedia?.('(hover: none), (pointer: coarse)').matches ||
+      'ontouchstart' in window ||
+      (navigator as Navigator & { maxTouchPoints?: number }).maxTouchPoints > 0
+    if (isTouch) return
+
     // Create elements
     const dot  = document.createElement('div')
     const ring = document.createElement('div')

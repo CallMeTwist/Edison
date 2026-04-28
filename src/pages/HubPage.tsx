@@ -127,7 +127,7 @@ export const HubPage: React.FC = () => {
     }}>
 
       {/* ── Background radial ── */}
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 42%,rgba(46,32,58,.92) 0%,rgba(14,10,18,.97) 60%,rgba(4,2,6,.99) 100%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 50% 42%,rgba(46,32,58,.92) 0%,rgba(14,10,18,.97) 60%,rgba(4,2,6,.99) 100%)', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* ── Portrait halo ── */}
       <div style={{
