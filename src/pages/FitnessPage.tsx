@@ -5,7 +5,7 @@ import { BackButton }       from '@/components/ui/BackButton'
 import { ProgressRing }     from '@/features/fitness/components/ProgressRing'
 import { NutritionSection } from '@/features/fitness/components/NutritionSection'
 import { RunnerScene }      from '@/features/fitness/components/RunnerScene'
-import { PROGRAMS, CLIENT_STATS, CERTIFICATIONS } from '@/features/fitness/data'
+import { PROGRAMS, CLIENT_STATS, AREAS_OF_IMPACT } from '@/features/fitness/data'
 import gsap from '@/lib/gsap'
 
 const ACC  = '#FF4500'
@@ -160,8 +160,8 @@ export const FitnessPage: React.FC = () => {
           {/* Certs desktop */}
           {!isMobile && (
             <div style={{ borderTop:'1px solid rgba(255,69,0,.08)', paddingTop:12, animation:'fadeUp .8s .7s ease both', flexShrink:0, paddingBottom:8 }}>
-              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:8 }}>CERTIFICATIONS</div>
-              {CERTIFICATIONS.map((c, i) => (
+              <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:8 }}>AREAS OF IMPACT</div>
+              {AREAS_OF_IMPACT.map((c, i) => (
                 <div key={c} style={{ padding:'6px 10px', background:'rgba(255,69,0,.03)', border:'1px solid rgba(255,69,0,.08)', borderRadius:8, color:'rgba(255,255,255,.45)', fontSize:10, display:'flex', gap:8, marginBottom:5, alignItems:'center', animation:`fadeUp .6s ${.7+i*.08}s ease both` }}>
                   <span style={{ color:ACC, fontWeight:700, flexShrink:0 }}>✓</span>{c}
                 </div>
@@ -297,8 +297,8 @@ export const FitnessPage: React.FC = () => {
 
               {isMobile && (
                 <div>
-                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:10 }}>CERTIFICATIONS</div>
-                  {CERTIFICATIONS.map(c => (
+                  <div style={{ fontFamily:"'Space Mono',monospace", fontSize:9, letterSpacing:4, color:'rgba(255,69,0,.35)', marginBottom:10 }}>AREAS OF IMPACT</div>
+                  {AREAS_OF_IMPACT.map(c => (
                     <div key={c} style={{ padding:'8px 12px', background:'rgba(255,69,0,.03)', border:'1px solid rgba(255,69,0,.08)', borderRadius:8, color:'rgba(255,255,255,.45)', fontSize:11, display:'flex', gap:10, marginBottom:6, alignItems:'center' }}>
                       <span style={{ color:ACC, fontWeight:700 }}>✓</span>{c}
                     </div>

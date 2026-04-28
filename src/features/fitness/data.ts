@@ -61,12 +61,12 @@ export const SUPPLEMENTS: Supplement[] = [
   { name: 'Magnesium Glycinate',  benefit: 'Sleep quality & recovery',      evidence: 'B' },
 ]
 
-export const CERTIFICATIONS = [
-  'NSCA Certified Strength & Conditioning Specialist (CSCS)',
-  'Precision Nutrition Level 2 — Master Health Coaching',
-  'FMS Level 2 — Certified Movement Specialist',
-  'ISSA Certified Online Coaching Specialist',
-  'BioSignature Modulation Practitioner',
+export const AREAS_OF_IMPACT = [
+  'Build Strength Safely',
+  'Improve Movement Quality',
+  'Reduce Injury Risk',
+  'Enhance Endurance',
+  'Develop Consistency',
 ]
 
 export const CLIENT_STATS = [
