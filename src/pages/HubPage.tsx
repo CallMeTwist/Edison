@@ -34,7 +34,6 @@ export const HubPage: React.FC = () => {
   const portalRefs = useRef<(HTMLDivElement | null)[]>([])
   const [proximity, setProximity] = useState<number[]>([0, 0, 0, 0])
   const [scrollHinted, setScrollHinted] = useState(false)
-  const [scrollProgress, setScrollProgress] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
   /* Desktop: cursor-proximity bloom */
@@ -74,7 +73,7 @@ export const HubPage: React.FC = () => {
     }
   }, [isMobile, scrollHinted])
 
-  /* Mobile: scroll-driven fade — cards bloom OVER the image as user scrolls */
+  /* Mobile: hint dismisses on first scroll */
   useEffect(() => {
     if (!isMobile) return
     const el = containerRef.current
@@ -84,32 +83,21 @@ export const HubPage: React.FC = () => {
       if (raf) return
       raf = requestAnimationFrame(() => {
         raf = 0
-        const max = el.scrollHeight - el.clientHeight
-        const p = max > 0 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0
-        setScrollProgress(p)
-        if (p > 0.02) setScrollHinted(true)
+        if (el.scrollTop > 12) setScrollHinted(true)
       })
     }
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => { el.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf) }
   }, [isMobile])
 
-  /* Mobile per-card progress with stagger — all cards reach full opacity by scroll ≈ 0.55 */
-  const cardProgress = (i: number) => {
-    const start = i * 0.08
-    const span = 0.20
-    return Math.min(1, Math.max(0, (scrollProgress - start) / span))
-  }
-
   const portalOpacity = (i: number) => {
-    if (isMobile) return cardProgress(i)
+    if (isMobile) return 1
     return DIM_OPACITY + (1 - DIM_OPACITY) * proximity[i]
   }
   const portalBlur = (i: number) => {
-    if (isMobile) return 2 * (1 - cardProgress(i))
+    if (isMobile) return 0
     return DIM_BLUR * (1 - proximity[i])
   }
-  const mobileImageOpacity = Math.max(0.04, 1 - scrollProgress * 1.4)
 
   return (
     <div ref={containerRef} style={{
@@ -124,15 +112,23 @@ export const HubPage: React.FC = () => {
       animation: 'worldIn .7s ease forwards',
       overflowY: isMobile ? 'auto' : 'hidden',
       WebkitOverflowScrolling: 'touch',
+      overscrollBehavior: 'contain',
     }}>
 
       {/* ── Background radial ── */}
       <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 50% 42%,rgba(46,32,58,.92) 0%,rgba(14,10,18,.97) 60%,rgba(4,2,6,.99) 100%)', pointerEvents: 'none', zIndex: 0 }} />
 
+      {/* ── Hero wrapper (mobile only): pins halo/photo/header to first 100dvh, so cards below are reached only by scroll ── */}
+      <div style={isMobile
+        ? { position: 'relative', width: '100%', height: '100dvh', flex: '0 0 auto', overflow: 'hidden' }
+        : { display: 'contents' }
+      }>
+
       {/* ── Portrait halo ── */}
       <div style={{
-        position: isMobile ? 'fixed' : 'absolute',
-        top: '50%', left: '50%',
+        position: 'absolute',
+        top: isMobile ? '50%' : '50%',
+        left: '50%',
         transform: 'translate(-50%, -50%)',
         width: isMobile ? '92vw' : '56vw',
         maxWidth: 780,
@@ -148,7 +144,7 @@ export const HubPage: React.FC = () => {
       {/* ── Real photo ── */}
       <div
         style={{
-          position: isMobile ? 'fixed' : 'absolute',
+          position: 'absolute',
           top: isMobile ? '54%' : '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -157,8 +153,6 @@ export const HubPage: React.FC = () => {
           aspectRatio: '3 / 4',
           zIndex: 1,
           pointerEvents: 'none',
-          opacity: isMobile ? mobileImageOpacity : 1,
-          transition: 'opacity .25s linear',
         }}
       >
         <img
@@ -202,7 +196,7 @@ export const HubPage: React.FC = () => {
 
       {/* ── Header ── */}
       <div style={{
-        position: isMobile ? 'fixed' : 'relative',
+        position: isMobile ? 'absolute' : 'relative',
         top: isMobile ? '7vh' : 'auto',
         left: isMobile ? 0 : 'auto',
         right: isMobile ? 0 : 'auto',
@@ -213,8 +207,6 @@ export const HubPage: React.FC = () => {
         animation: 'fadeUp .9s ease forwards',
         width: isMobile ? '100%' : '100%',
         pointerEvents: 'none',
-        opacity: isMobile ? Math.max(0.55, 1 - scrollProgress * 0.5) : 1,
-        transition: isMobile ? 'opacity .2s linear' : 'none',
       }}>
         <div style={{
           fontFamily: "'Space Mono', monospace",
@@ -276,30 +268,25 @@ export const HubPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Mobile scroll-driver spacer — gives the user room to scroll while cards bloom over the image ── */}
-      {isMobile && <div style={{ flex: '0 0 auto', height: '210vh', width: 1 }} aria-hidden="true" />}
+      </div>{/* end hero wrapper */}
 
       {/* ── Portal grid ── */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-        gap: isMobile ? 10 : 16,
-        width: isMobile ? 'calc(100% - 32px)' : '100%',
+        gap: isMobile ? 12 : 16,
+        width: isMobile ? '100%' : '100%',
         maxWidth: 800,
-        position: isMobile ? 'fixed' : 'relative',
-        left: isMobile ? 16 : 'auto',
-        right: isMobile ? 16 : 'auto',
-        bottom: isMobile ? 20 : 'auto',
-        top: isMobile ? 'auto' : 'auto',
+        position: 'relative',
         zIndex: isMobile ? 6 : 2,
-        marginBottom: isMobile ? 0 : 0,
-        pointerEvents: isMobile && scrollProgress < 0.04 ? 'none' : 'auto',
+        marginTop: isMobile ? 0 : 0,
+        marginBottom: isMobile ? 28 : 0,
+        flex: '0 0 auto',
       }}>
         {PORTALS.map((p, i) => {
           const op = portalOpacity(i)
           const bl = portalBlur(i)
-          const cp = isMobile ? cardProgress(i) : 0
-          const lit = !isMobile ? proximity[i] > 0.25 : cp > 0.5
+          const lit = !isMobile && proximity[i] > 0.25
           return (
             <div
               key={p.id}
@@ -311,25 +298,19 @@ export const HubPage: React.FC = () => {
                 background: p.bg,
                 border: `1px solid ${hov === i || lit ? p.clr + '55' : 'rgba(255,255,255,.06)'}`,
                 borderRadius: isMobile ? 16 : 22,
-                padding: isMobile ? '14px 18px' : '32px 28px',
+                padding: isMobile ? '18px 20px' : '32px 28px',
                 cursor: 'pointer',
                 position: 'relative',
                 overflow: 'hidden',
                 opacity: op,
                 filter: bl > 0.05 ? `blur(${bl}px)` : 'none',
-                transform: hov === i
-                  ? 'translateY(-4px)'
-                  : (isMobile ? `translateY(${(1 - cp) * 18}px) scale(${0.96 + 0.04 * cp})` : 'translateY(0)'),
+                transform: hov === i ? 'translateY(-4px)' : 'translateY(0)',
                 transformOrigin: 'center',
                 boxShadow: hov === i
                   ? `0 22px 48px ${p.gc}, 0 0 0 1px ${p.clr}22`
-                  : (isMobile ? `0 ${6 + 14 * cp}px ${20 + 22 * cp}px rgba(0,0,0,${0.35 + 0.2 * cp})` : '0 4px 20px rgba(0,0,0,.4)'),
-                backdropFilter: isMobile ? `blur(${10 * cp}px)` : 'none',
-                WebkitBackdropFilter: isMobile ? `blur(${10 * cp}px)` : 'none',
-                transition: isMobile
-                  ? 'opacity .15s linear, filter .15s linear, transform .15s linear, border-color .25s ease, box-shadow .25s ease'
-                  : 'opacity .35s ease, filter .35s ease, transform .55s cubic-bezier(.23,1,.32,1), border-color .35s ease, box-shadow .55s ease',
-                animation: isMobile ? undefined : `fadeUp .85s ${0.1 + i * 0.12}s ease both`,
+                  : '0 4px 20px rgba(0,0,0,.4)',
+                transition: 'opacity .35s ease, filter .35s ease, transform .55s cubic-bezier(.23,1,.32,1), border-color .35s ease, box-shadow .55s ease',
+                animation: `fadeUp .85s ${0.1 + i * 0.12}s ease both`,
               }}
             >
               <div style={{

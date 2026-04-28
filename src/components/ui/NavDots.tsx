@@ -8,16 +8,60 @@ interface Props {
 
 /**
  * Bottom-right world rail.
- * - Wider, label-bearing pills (≥44px tap targets) replace the previous tiny dots.
- * - A trailing "next world" chevron previews the accent color of the next world,
- *   making the path forward obvious and giving a generous tap target.
+ * Only shows the *previous* and *next* worlds — the current one isn't rendered
+ * (the user is already in it). Each pill is colored with that world's accent
+ * so the next destination is unambiguous.
  */
 export const NavDots: React.FC<Props> = ({ current, onGo }) => {
   if (current === 'hub') return null
 
-  const idx        = NAV_WORLDS.indexOf(current as WorldId)
-  const nextWorld  = idx >= 0 && idx < NAV_WORLDS.length - 1 ? NAV_WORLDS[idx + 1] : null
-  const nextCfg    = nextWorld ? WORLD_CONFIG[nextWorld] : null
+  const idx       = NAV_WORLDS.indexOf(current as WorldId)
+  const prevWorld = idx > 0 ? NAV_WORLDS[idx - 1] : null
+  const nextWorld = idx >= 0 && idx < NAV_WORLDS.length - 1 ? NAV_WORLDS[idx + 1] : null
+
+  if (!prevWorld && !nextWorld) return null
+
+  const pill = (w: WorldId, dir: 'prev' | 'next') => {
+    const cfg = WORLD_CONFIG[w]
+    const arrow = dir === 'prev' ? '←' : '→'
+    return (
+      <button
+        key={w}
+        title={`${dir === 'prev' ? 'Previous' : 'Next'}: ${cfg.label}`}
+        aria-label={`Go to ${cfg.label}`}
+        onClick={() => onGo(w)}
+        style={{
+          height:       32,
+          padding:      '0 12px',
+          borderRadius: 999,
+          border:       `1px solid ${cfg.accent}55`,
+          cursor:       'pointer',
+          background:   dir === 'prev'
+            ? `linear-gradient(90deg, ${cfg.accent}26, transparent)`
+            : `linear-gradient(90deg, transparent, ${cfg.accent}26)`,
+          boxShadow:    `0 0 12px ${cfg.accent}33`,
+          display:      'flex',
+          alignItems:   'center',
+          gap:          8,
+          color:        cfg.accent,
+          fontFamily:   "'Space Mono', monospace",
+          fontSize:     11,
+          letterSpacing: 1.5,
+          textTransform: 'uppercase',
+          flexDirection: dir === 'prev' ? 'row' : 'row-reverse',
+          transition:   'transform .25s ease, box-shadow .25s ease',
+        }}
+      >
+        <span style={{ fontSize: 14, lineHeight: 1 }}>{arrow}</span>
+        <span style={{
+          width: 8, height: 8, borderRadius: '50%',
+          background: cfg.accent,
+          boxShadow:  `0 0 8px ${cfg.accent}`,
+          flex: '0 0 auto',
+        }} />
+      </button>
+    )
+  }
 
   return (
     <div
@@ -29,7 +73,7 @@ export const NavDots: React.FC<Props> = ({ current, onGo }) => {
         display:   'flex',
         alignItems: 'center',
         gap:        8,
-        padding:    '8px 10px',
+        padding:    '6px 8px',
         borderRadius: 999,
         background: 'rgba(8,8,12,.55)',
         backdropFilter: 'blur(14px)',
@@ -39,75 +83,8 @@ export const NavDots: React.FC<Props> = ({ current, onGo }) => {
         animation:  'fadeIn .5s ease forwards',
       }}
     >
-      {NAV_WORLDS.map(w => {
-        const active = w === current
-        const cfg    = WORLD_CONFIG[w]
-        return (
-          <button
-            key={w}
-            title={cfg.label}
-            aria-label={cfg.label}
-            aria-current={active ? 'page' : undefined}
-            onClick={() => onGo(w)}
-            style={{
-              minWidth:     active ? 56 : 28,
-              height:       28,
-              padding:      active ? '0 12px' : 0,
-              borderRadius: 999,
-              border:       active ? `1px solid ${cfg.accent}66` : '1px solid rgba(255,255,255,.10)',
-              cursor:       'pointer',
-              transition:   'all 0.35s cubic-bezier(.23,1,.32,1)',
-              background:   active ? `${cfg.accent}22` : 'rgba(255,255,255,.06)',
-              boxShadow:    active ? `0 0 14px ${cfg.accent}55, inset 0 0 0 1px ${cfg.accent}33` : 'none',
-              display:      'flex',
-              alignItems:   'center',
-              justifyContent: 'center',
-              gap:          6,
-              color:        active ? cfg.accent : 'rgba(255,255,255,.6)',
-              fontFamily:   "'Space Mono', monospace",
-              fontSize:     10,
-              letterSpacing: 1.5,
-              textTransform: 'uppercase',
-            }}
-          >
-            <span style={{
-              width: 6, height: 6, borderRadius: '50%',
-              background: active ? cfg.accent : 'rgba(255,255,255,.35)',
-              boxShadow: active ? `0 0 8px ${cfg.accent}` : 'none',
-              flex: '0 0 auto',
-            }} />
-            {active && <span>{cfg.label.split(' ')[0]}</span>}
-          </button>
-        )
-      })}
-
-      {nextCfg && nextWorld && (
-        <button
-          title={`Next: ${nextCfg.label}`}
-          aria-label={`Go to ${nextCfg.label}`}
-          onClick={() => onGo(nextWorld)}
-          style={{
-            marginLeft:   4,
-            width:        40,
-            height:       28,
-            padding:      0,
-            borderRadius: 999,
-            border:       `1px solid ${nextCfg.accent}55`,
-            cursor:       'pointer',
-            background:   `linear-gradient(90deg, transparent, ${nextCfg.accent}26)`,
-            boxShadow:    `0 0 12px ${nextCfg.accent}33`,
-            display:      'flex',
-            alignItems:   'center',
-            justifyContent: 'center',
-            color:        nextCfg.accent,
-            fontSize:     14,
-            lineHeight:   1,
-            transition:   'all .3s ease',
-          }}
-        >
-          →
-        </button>
-      )}
+      {prevWorld && pill(prevWorld, 'prev')}
+      {nextWorld && pill(nextWorld, 'next')}
     </div>
   )
 }
