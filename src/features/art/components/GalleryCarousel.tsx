@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { ARTWORKS } from '../data'
 import { ArtShapeEl } from './ArtShape'
 import { useWindowSize } from '@/hooks/useWindowSize'
+import { useWorld } from '@/context/WorldContext'
 import gsap from '@/lib/gsap'
 
 export const GalleryCarousel: React.FC = () => {
@@ -12,6 +13,7 @@ export const GalleryCarousel: React.FC = () => {
   const dragDelta               = useRef(0)
   const didDrag                 = useRef(false)
   const { isMobile }            = useWindowSize()
+  const { navigateTo }          = useWorld()
   const containerRef            = useRef<HTMLDivElement>(null)
   const borderRefs              = useRef<(SVGRectElement | null)[]>([])
   const titleRef                = useRef<HTMLHeadingElement>(null)
@@ -343,17 +345,26 @@ export const GalleryCarousel: React.FC = () => {
           {/* Action row */}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
             {artwork.available && (
-              <button style={{
-                padding:      '10px 22px',
-                background:    '#1a0810',
-                border:       'none',
-                borderRadius:  100,
-                color:        '#FBF0E8',
-                cursor:       'pointer',
-                fontFamily:   "'Caveat', cursive",
-                fontSize:      17,
-                transition:   'all .3s ease',
-              }}
+              <button
+                onClick={() => navigateTo('contact', {
+                  service: 'Art Commission',
+                  message:
+                    `Hi Edison — I'd like to enquire about purchasing "${artwork.title}" ` +
+                    `(${artwork.medium}, ${artwork.year}` +
+                    `${artwork.dimensions ? `, ${artwork.dimensions}` : ''}). ` +
+                    `Could you share availability and pricing?`,
+                })}
+                style={{
+                  padding:      '10px 22px',
+                  background:    '#1a0810',
+                  border:       'none',
+                  borderRadius:  100,
+                  color:        '#FBF0E8',
+                  cursor:       'pointer',
+                  fontFamily:   "'Caveat', cursive",
+                  fontSize:      17,
+                  transition:   'all .3s ease',
+                }}
                 onMouseEnter={e => { const el = e.currentTarget; el.style.background = artwork.colors.h1; el.style.transform = 'scale(1.04)' }}
                 onMouseLeave={e => { const el = e.currentTarget; el.style.background = '#1a0810'; el.style.transform = '' }}
               >

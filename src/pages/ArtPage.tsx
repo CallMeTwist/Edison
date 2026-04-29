@@ -118,21 +118,19 @@ export const ArtPage: React.FC = () => {
           ))}
         </div>
 
-        {!isMobile && (
-          <>
-            <button
-              onClick={() => navigateTo('contact')}
-              style={{ padding: '12px 26px', background: '#1a0810', border: 'none', borderRadius: 100, color: '#FBF0E8', cursor: 'pointer', fontFamily: "'Caveat',cursive", fontSize: 18, transition: 'all .3s', width: 'fit-content', animation: 'fadeUp .8s .85s ease both' }}
-              onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background = ACC; el.style.transform = 'scale(1.04)' }}
-              onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background = '#1a0810'; el.style.transform = '' }}
-            >
-              Commission Works ✦
-            </button>
+        <button
+          onClick={() => navigateTo('contact', { service: 'Art Commission' })}
+          style={{ padding: '12px 26px', background: '#1a0810', border: 'none', borderRadius: 100, color: '#FBF0E8', cursor: 'pointer', fontFamily: "'Caveat',cursive", fontSize: 18, transition: 'all .3s', width: 'fit-content', animation: 'fadeUp .8s .85s ease both' }}
+          onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background = ACC; el.style.transform = 'scale(1.04)' }}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background = '#1a0810'; el.style.transform = '' }}
+        >
+          Commission Works ✦
+        </button>
 
-            <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 3.5, color: 'rgba(20,5,12,.28)', lineHeight: 1.8, animation: 'fadeUp .8s 1s ease both' }}>
-              ← Drag · Swipe · Scroll<br />to navigate the gallery
-            </div>
-          </>
+        {!isMobile && (
+          <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 3.5, color: 'rgba(20,5,12,.28)', lineHeight: 1.8, animation: 'fadeUp .8s 1s ease both' }}>
+            ← Drag · Swipe · Scroll<br />to navigate the gallery
+          </div>
         )}
       </div>
 

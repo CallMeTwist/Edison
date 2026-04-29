@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, type FormEvent } from 'react'
 import { useWorld }      from '@/context/WorldContext'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { CONTACT_INFO, SERVICE_OPTIONS, type ServiceType } from '@/features/contact/data'
+import type { ContactPrefill } from '@/context/WorldContext'
 import gsap from '@/lib/gsap'
 
 type SendMethod = 'whatsapp' | 'email'
@@ -27,8 +28,19 @@ const WORLD_ACCENT: Record<string, string> = {
 }
 
 export const ContactPage: React.FC = () => {
-  const { navigateTo, world, prevWorld } = useWorld()
+  const { navigateTo, world, prevWorld, consumeContactPrefill } = useWorld()
   const { isMobile }                     = useWindowSize()
+
+  // Pull a one-shot prefill (set by callers like the art gallery's "Enquire to Purchase").
+  // Read it once, synchronously, before paint to avoid a flash of empty fields.
+  const initialPrefillRef = useRef<ContactPrefill | null>(null)
+  if (initialPrefillRef.current === null) {
+    initialPrefillRef.current = consumeContactPrefill() ?? {}
+  }
+  const initialPrefill = initialPrefillRef.current
+
+  const isValidService = (s: string | undefined): s is ServiceType =>
+    !!s && (SERVICE_OPTIONS as string[]).includes(s)
 
   // If the user reloaded directly on /contact, prevWorld equals the current world
   // and there's no meaningful "back" — fall back to the hub.
@@ -38,11 +50,11 @@ export const ContactPage: React.FC = () => {
   const [formState, setFormState] = useState<FormState>('idle')
   const [method,    setMethod]    = useState<SendMethod>('whatsapp')
   const [data, setData]           = useState<FormData>({
-    name:    '',
-    service: 'General Enquiry',
-    message: '',
-    email:   '',
-    phone:   '',
+    name:    initialPrefill.name    ?? '',
+    service: isValidService(initialPrefill.service) ? initialPrefill.service : 'General Enquiry',
+    message: initialPrefill.message ?? '',
+    email:   initialPrefill.email   ?? '',
+    phone:   initialPrefill.phone   ?? '',
   })
 
   const gradientRef    = useRef<HTMLDivElement>(null)

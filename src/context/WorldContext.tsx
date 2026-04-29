@@ -6,12 +6,21 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import type { WorldId } from '@/services/types'
 import { WORLD_CONFIG } from '@/config/constants'
 
+export interface ContactPrefill {
+  name?:    string
+  service?: string
+  email?:   string
+  phone?:   string
+  message?: string
+}
+
 interface WorldContextValue {
-  world:       WorldId
-  prevWorld:   WorldId
-  isVeil:      boolean
-  veilColor:   string
-  navigateTo:  (next: WorldId) => void
+  world:              WorldId
+  prevWorld:          WorldId
+  isVeil:             boolean
+  veilColor:          string
+  navigateTo:         (next: WorldId, contactPrefill?: ContactPrefill) => void
+  consumeContactPrefill: () => ContactPrefill | null
 }
 
 const WorldContext = createContext<WorldContextValue | null>(null)
@@ -48,6 +57,7 @@ export const WorldProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [veilColor, setVeilColor] = useState('#000000')
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastWorldRef  = useRef<WorldId>(currentWorld)
+  const contactPrefillRef = useRef<ContactPrefill | null>(null)
 
   // Track route changes (covers both navigateTo and browser back/forward).
   // We update prevWorld to the world the user just LEFT (lastWorldRef.current),
@@ -78,8 +88,9 @@ export const WorldProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current)
   }, [])
 
-  const navigateTo = useCallback((next: WorldId) => {
+  const navigateTo = useCallback((next: WorldId, contactPrefill?: ContactPrefill) => {
     if (next === currentWorld) return
+    if (contactPrefill) contactPrefillRef.current = contactPrefill
     const cfg = WORLD_CONFIG[next]
     setVeilColor(cfg.veilColor)
     setIsVeil(true)
@@ -88,8 +99,14 @@ export const WorldProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }, 360)
   }, [currentWorld, navigate])
 
+  const consumeContactPrefill = useCallback(() => {
+    const p = contactPrefillRef.current
+    contactPrefillRef.current = null
+    return p
+  }, [])
+
   return (
-    <WorldContext.Provider value={{ world: currentWorld, prevWorld, isVeil, veilColor, navigateTo }}>
+    <WorldContext.Provider value={{ world: currentWorld, prevWorld, isVeil, veilColor, navigateTo, consumeContactPrefill }}>
       {children}
     </WorldContext.Provider>
   )
