@@ -126,7 +126,7 @@ export const ArtPage: React.FC = () => {
               onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background = ACC; el.style.transform = 'scale(1.04)' }}
               onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.background = '#1a0810'; el.style.transform = '' }}
             >
-              Commission Work ✦
+              Commission Works ✦
             </button>
 
             <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: 3.5, color: 'rgba(20,5,12,.28)', lineHeight: 1.8, animation: 'fadeUp .8s 1s ease both' }}>
